@@ -4,12 +4,12 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <FileVersion>1.0.0</FileVersion>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <Copyright>kitsumed - GPL-3.0 license</Copyright>
+    <Copyright>Copyright kitsumed (Med) - GPL-3.0 license</Copyright>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Version>1.0.0</Version>
+    <Authors>$(AssemblyName)</Authors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
