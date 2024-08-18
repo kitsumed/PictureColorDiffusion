@@ -40,7 +40,6 @@ namespace PictureColorDiffusion.Utilities
 					// UNIT 1 CONFIG
 					new StableDiffusionExtensionControlNetArg()
 					{
-						//module = "lineart_anime_denoise",
 						module = "invert (from white bg & black line)",
 						weight = 0.8,
 						guidance_start = 0,
