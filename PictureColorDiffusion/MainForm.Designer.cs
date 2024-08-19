@@ -65,6 +65,7 @@
 			buttonRefreshModels = new Button();
 			labelModel = new Label();
 			groupBoxInference = new GroupBox();
+			checkBoxIncludeMetadata = new CheckBox();
 			labelSampler = new Label();
 			comboBoxSampler = new ComboBox();
 			labelAdditionalPrompt = new Label();
@@ -82,7 +83,6 @@
 			buttonStopInference = new Button();
 			buttonInference = new Button();
 			toolTip1 = new ToolTip(components);
-			checkBoxIncludeMetadata = new CheckBox();
 			groupBoxStableDiffusionAPIConfig.SuspendLayout();
 			groupBoxPictureColorDiffusionConfig.SuspendLayout();
 			groupBoxControlnetConfiguration.SuspendLayout();
@@ -502,6 +502,20 @@
 			groupBoxInference.TabStop = false;
 			groupBoxInference.Text = "Inference";
 			// 
+			// checkBoxIncludeMetadata
+			// 
+			checkBoxIncludeMetadata.AutoSize = true;
+			checkBoxIncludeMetadata.Checked = true;
+			checkBoxIncludeMetadata.CheckState = CheckState.Checked;
+			checkBoxIncludeMetadata.ForeColor = Color.WhiteSmoke;
+			checkBoxIncludeMetadata.Location = new Point(11, 103);
+			checkBoxIncludeMetadata.Name = "checkBoxIncludeMetadata";
+			checkBoxIncludeMetadata.Size = new Size(155, 21);
+			checkBoxIncludeMetadata.TabIndex = 115;
+			checkBoxIncludeMetadata.Text = "Include metadata";
+			toolTip1.SetToolTip(checkBoxIncludeMetadata, "Include metadata about generation settings in the output picture");
+			checkBoxIncludeMetadata.UseVisualStyleBackColor = true;
+			// 
 			// labelSampler
 			// 
 			labelSampler.AutoSize = true;
@@ -535,12 +549,12 @@
 			// 
 			// textBoxNegativePrompt
 			// 
-			textBoxNegativePrompt.Location = new Point(385, 74);
+			textBoxNegativePrompt.Location = new Point(385, 128);
 			textBoxNegativePrompt.Multiline = true;
 			textBoxNegativePrompt.Name = "textBoxNegativePrompt";
 			textBoxNegativePrompt.PlaceholderText = "Negative prompt";
 			textBoxNegativePrompt.ScrollBars = ScrollBars.Vertical;
-			textBoxNegativePrompt.Size = new Size(319, 161);
+			textBoxNegativePrompt.Size = new Size(319, 105);
 			textBoxNegativePrompt.TabIndex = 112;
 			toolTip1.SetToolTip(textBoxNegativePrompt, "Additional negative prompt added after the mode negative prompt");
 			// 
@@ -551,7 +565,7 @@
 			textBoxPrompt.Name = "textBoxPrompt";
 			textBoxPrompt.PlaceholderText = "Prompt";
 			textBoxPrompt.ScrollBars = ScrollBars.Vertical;
-			textBoxPrompt.Size = new Size(499, 50);
+			textBoxPrompt.Size = new Size(319, 105);
 			textBoxPrompt.TabIndex = 111;
 			toolTip1.SetToolTip(textBoxPrompt, "Additional prompt added between the mode prompt and the interrogation prompt (if enabled)");
 			// 
@@ -637,9 +651,9 @@
 			pictureBoxPreview.BorderStyle = BorderStyle.Fixed3D;
 			pictureBoxPreview.Cursor = Cursors.Hand;
 			pictureBoxPreview.Enabled = false;
-			pictureBoxPreview.Location = new Point(710, 78);
+			pictureBoxPreview.Location = new Point(710, 22);
 			pictureBoxPreview.Name = "pictureBoxPreview";
-			pictureBoxPreview.Size = new Size(175, 155);
+			pictureBoxPreview.Size = new Size(175, 211);
 			pictureBoxPreview.SizeMode = PictureBoxSizeMode.Zoom;
 			pictureBoxPreview.TabIndex = 3;
 			pictureBoxPreview.TabStop = false;
@@ -684,20 +698,6 @@
 			// 
 			toolTip1.ToolTipIcon = ToolTipIcon.Info;
 			toolTip1.ToolTipTitle = "Info";
-			// 
-			// checkBoxIncludeMetadata
-			// 
-			checkBoxIncludeMetadata.AutoSize = true;
-			checkBoxIncludeMetadata.Checked = true;
-			checkBoxIncludeMetadata.CheckState = CheckState.Checked;
-			checkBoxIncludeMetadata.ForeColor = Color.WhiteSmoke;
-			checkBoxIncludeMetadata.Location = new Point(11, 103);
-			checkBoxIncludeMetadata.Name = "checkBoxIncludeMetadata";
-			checkBoxIncludeMetadata.Size = new Size(155, 21);
-			checkBoxIncludeMetadata.TabIndex = 115;
-			checkBoxIncludeMetadata.Text = "Include metadata";
-			toolTip1.SetToolTip(checkBoxIncludeMetadata, "Include metadata about generation settings in the output picture");
-			checkBoxIncludeMetadata.UseVisualStyleBackColor = true;
 			// 
 			// MainForm
 			// 
