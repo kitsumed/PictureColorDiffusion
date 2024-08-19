@@ -28,13 +28,15 @@
 		{
 			// Colors
 			"greyscale","monochrome", "partially colored", "muted color", "brown theme", "white theme",
-			"grey theme", "spot color", "scan", "sepia",
+			"grey theme", "spot color", "scan", "sepia", "negative", "white skin",
+			"purple theme", "blue theme", "red theme", "color issue", "neon palette", "black theme",
+			"orange theme", "light brown background", "high contrast",
 			// Quality
 			"low quality", "lowres", "worst quality", "deformed", "signature", "watermark",
 			"username", "cropped", "web address", "scan artifacts", "bar censor", "censored",
 			"thought bubble", "mosaic censoring", "oversaturated", "circle name", "artist name", "copyright name",
 			"company name", "character name", "blur censor", "pointless censoring", "transparent censoring", "crease",
-			"jpeg artifacts", 
+			"jpeg artifacts", "screentones",
 			// Text
 			"chinese text", "bopomofo text", "cantonese text", "minnan text", "shenyang mandarin text", "sichuanese text",
 			"traditional chinese text", "pinyin text", "archaic japanese text", "furigana", "romaji text", "kiriji text",
@@ -44,7 +46,7 @@
 			"middle english text", "australian english text", "irish english text", "scottish english text", "breton text", "danish text",
 			"dutch text", "german text", "icelandic text", "luxembourgish text", "norwegian text", "scots text",
 			"swedish text", "welsh text", "yiddish text", "catalan text", "french text", "italian text",
-			"latin text", "maltese text", "romanian text", "spanish text", "portuguese text"
+			"latin text", "maltese text", "romanian text", "spanish text", "portuguese text", "ranguage"
 
 		};
     }

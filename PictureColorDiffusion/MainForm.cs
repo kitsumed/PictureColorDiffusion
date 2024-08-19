@@ -445,8 +445,15 @@ namespace PictureColorDiffusion
 						// If metadata is enabled, set the MagickImage metadata
 						if (checkBoxIncludeMetadata.Checked) 
 						{
+							// Parameters attribute that try to match the stable diffusion webui one
 							generatedImageMagick.SetAttribute("parameters", $"{newPrompt}\nNegative prompt: {newNegativePrompt}\nSteps: {requestModel.steps}, Sampler: {requestModel.sampler_name}, Schedule type: {requestModel.scheduler}, CFG scale: {requestModel.cfg_scale}, Seed: {requestModel.seed}, Size: {requestModel.width}x{requestModel.height}");
-							generatedImageMagick.SetAttribute("comments", $"Made with PictureColorDiffusion v{Application.ProductVersion} using mode '{SelectedMode}'");
+							// Comments attribute with info about the app version & app settings
+							generatedImageMagick.SetAttribute("comments", $"Made with PictureColorDiffusion v{Application.ProductVersion} using mode '{SelectedMode}'.\n" +
+								/// Additional info about the generation
+								$"\nControlnet lowvram: {checkBoxControlNetLowvram.Checked}" +
+								$"\nReference picture: {controlNetReferenceUnitArg != null}" +
+								$"\nKeep original size: {checkBoxKeepOriginalSize.Checked}" +
+								$"\nUse interrogation: {checkBoxUseInterrogation.Checked}");
 						}
 						generatedImageMagick.RemoveAttribute("date:create");
 						generatedImageMagick.RemoveAttribute("date:modify");

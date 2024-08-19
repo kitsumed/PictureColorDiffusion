@@ -30,8 +30,8 @@ namespace PictureColorDiffusion.Utilities
 			{
 				"Manga", new PictureColorDiffusionModeModel()
 				{
-					prompt = "detailed (official style|style parody|clothes), (colored (comic|manga|5koma|4koma|3koma):1.1), masterpiece, highres, blank speech bubble, simple background, textless version, ",
-					negative_prompt = "(greyscale:1.2), monochrome, deformed, jpeg artifacts, lineart, sepia, low quality, lowres, worst quality, brown theme, grey theme, light brown background, bad anatomy, ",
+					prompt = "detailed (official style|style parody), (comic|cover|manga|5koma|4koma|3koma):1.1, masterpiece, highres, blank speech bubble, simple background, textless version, emphasis lines, ",
+					negative_prompt = "(greyscale:1.1), monochrome, deformed, jpeg artifacts, lineart, sepia, low quality, lowres, worst quality, brown theme, grey theme, light brown background, bad anatomy, high contrast, bad, screentones, neon palette, color issue, purple theme, black theme, [blue theme|orange theme]:0.5, ",
 					// Japanese JB5 paper size (in pixels) divided by 2 (taken from papersizes.io)
 					dynamicResizeMax = new Size(1075 ,1518),
 					interogateModel = "deepdanbooru",
