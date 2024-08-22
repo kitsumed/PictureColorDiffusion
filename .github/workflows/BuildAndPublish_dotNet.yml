@@ -23,6 +23,7 @@ jobs:
   # Build and upload as artifact the files
   build:
     runs-on: windows-latest
+    permissions: {} # Disable all github token permissions for this job
     steps:
     # Copy the repo code from the tag that triggered this action. This allow this job to access the code of the repo.
     - name: Checkout tag
@@ -75,27 +76,28 @@ jobs:
       # Compress the build files as "release.zip"
       - name: Compress build output for release
         run: |
-          # Change path to github actions (To have the build files at the root of the zip file)
+          # Change path to the downloaded artifacts (To have the build files at the root of the zip file)
           cd github-action/artifacts-build-output/
-          # Create release.zip as github-action/release.zip 
+          # Create release.zip under github-action/release.zip 
           zip -r ../release.zip ./*
 
       - name: Create 256SHA checksum of release.zip
         run: |
           touch release-checksum.md
           ReleaseHash=$(shasum -a 256 github-action/release.zip | awk '{ print $1 }')
-          echo "## Notice about Github Action" >> release-checksum.md
+          echo "## Notice about this release build" >> release-checksum.md
           echo "This release was build using github action. **The build can be found under \`release.zip\`**." >> release-checksum.md
           echo "### Checksum" >> release-checksum.md
           echo "| File Name  | SHA256 |" >> release-checksum.md
           echo "| ------------ | ------------ |" >> release-checksum.md
           echo "| \`release.zip\`  | \`$ReleaseHash\`|" >> release-checksum.md
-          # Try to make the release-checksum.md immutable to try to prevent modifications
+          # Make the release-checksum.md immutable to try to prevent modifications
           sudo chattr +i release-checksum.md
 
       # Upload "release.zip" to the github release
       - name: Publish build to github release
-        uses: softprops/action-gh-release@v2
+      # Use version v2.0.8, verify changelogs & latest before updating for security
+        uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191 #v2.0.8 pinned hash
         with:
           prerelease: false
           append_body: true
