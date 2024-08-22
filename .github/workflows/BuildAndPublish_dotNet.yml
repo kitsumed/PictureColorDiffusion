@@ -23,7 +23,9 @@ jobs:
   # Build and upload as artifact the files
   build:
     runs-on: windows-latest
-    permissions: {} # Disable all github token permissions for this job
+    # Scopes not defined are set to None as long as one scope is manually set here
+    permissions:
+        contents: read # Allow checkout action to get the repo code
     steps:
     # Copy the repo code from the tag that triggered this action. This allow this job to access the code of the repo.
     - name: Checkout tag
@@ -62,6 +64,7 @@ jobs:
       needs: build
       if: success() # Ensure that there was no error during the "build" job
       # This grant the write permission to the job since gh-release need the permission to edit a release to upload the build files
+      # Scopes not defined are set to None as long as one scope is manually set here
       permissions:
         contents: write
       steps:
@@ -96,7 +99,7 @@ jobs:
 
       # Upload "release.zip" to the github release
       - name: Publish build to github release
-      # Use version v2.0.8, verify changelogs & latest before updating for security
+      # Use a pinned hash as a prevention to repojacking, verify changelogs & latest before updating for security
         uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191 #v2.0.8 pinned hash
         with:
           prerelease: false
