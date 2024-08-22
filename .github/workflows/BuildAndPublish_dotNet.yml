@@ -46,7 +46,7 @@ jobs:
         # Get the tag name v*.*.* and remove the "v"
         $VERSION_NUMBER = $env:GITHUB_REF_NAME -replace '^v', ''
         # Build the project
-        dotnet build $env:CSPROJ_PATH --configuration Release --no-restore --output $env:BUILD_OUTPUT_PATH /p:Version=$env:VERSION_NUMBER /p:AssemblyVersion=$env:VERSION_NUMBER
+        dotnet build $env:CSPROJ_PATH --configuration Release --no-restore --output $env:BUILD_OUTPUT_PATH /p:Version=$VERSION_NUMBER /p:AssemblyVersion=$VERSION_NUMBER
       
     - name: Test the build
       run: dotnet test $env:CSPROJ_PATH --no-build --verbosity normal
