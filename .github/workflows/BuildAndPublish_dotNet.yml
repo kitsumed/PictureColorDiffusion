@@ -1,0 +1,103 @@
+# This workflow will build a .NET project
+# Configuration
+# Ensure that the CSPROJ_PATH is egual to the path of the project file you want to build.
+# You shouldn't need to change BUILD_OUTPUT_PATH except if the path defined in the variable exist in your repo
+
+name: Build .NET project as release and publish it
+
+# Trigger when a tag following the "v*.*.*" format is created (semantic versioning)
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+env: 
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_NOLOGO: true
+  # Path to the csproj file that will be used by dotnet to build
+  CSPROJ_PATH: ${{ github.workspace }}\PictureColorDiffusion\PictureColorDiffusion.csproj
+  # Output path of the build
+  BUILD_OUTPUT_PATH: ${{ github.workspace }}\github-action\release-build-output
+
+jobs:
+  # Build and upload as artifact the files
+  build:
+    runs-on: windows-latest
+    steps:
+    # Copy the repo code from the tag that triggered this action. This allow this job to access the code of the repo.
+    - name: Checkout tag
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+        
+    - name: Restore/Install dependencies
+      run: dotnet restore $env:CSPROJ_PATH
+      
+    - name: Build with 'Release' config to the $BUILD_OUTPUT_PATH env
+      # Always run the CLI as a Powershell since we get our env variable for the output using powershell syntax
+      shell: pwsh
+      run: dotnet build $env:CSPROJ_PATH --configuration Release --no-restore --output $env:BUILD_OUTPUT_PATH
+      
+    - name: Test the build
+      run: dotnet test $env:CSPROJ_PATH --no-build --verbosity normal
+
+      # Upload build files as a artifact to get access to them on the other job later
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-output
+        path: ${{ env.BUILD_OUTPUT_PATH }}/*
+        # Only keep the artifact up on github for 1 day instead of 30 default since we only need to use it re-use it in the publish job one time
+        retention-days: 1
+
+  # Download the "build" job artifact and prepare them for release
+  publish:
+      # Ubuntu often seems to be starting faster than windows, for a publish task, windows is not needed
+      runs-on: ubuntu-latest
+      # Only start this job if the "build" job completed without errors
+      needs: build
+      if: success() # Ensure that there was no error during the "build" job
+      # This grant the write permission to the job since gh-release need the permission to edit a release to upload the build files
+      permissions:
+        contents: write
+      steps:
+      # Get back the uploaded build files
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          # Where to save the downloaded files
+          path: github-action/artifacts-build-output
+          
+      # Compress the build files as "release.zip"
+      - name: Compress build output for release
+        run: |
+          # Change path to github actions (To have the build files at the root of the zip file)
+          cd github-action/artifacts-build-output/
+          # Create release.zip as github-action/release.zip 
+          zip -r ../release.zip ./*
+
+      - name: Create 256SHA checksum of release.zip
+        run: |
+          touch release-checksum.md
+          ReleaseHash=$(shasum -a 256 github-action/release.zip | awk '{ print $1 }')
+          echo "## Notice about Github Action" >> release-checksum.md
+          echo "This release was build using github action. **The build can be found under \`release.zip\`**." >> release-checksum.md
+          echo "### Checksum" >> release-checksum.md
+          echo "| File Name  | SHA256 |" >> release-checksum.md
+          echo "| ------------ | ------------ |" >> release-checksum.md
+          echo "| \`release.zip\`  | \`$ReleaseHash\`|" >> release-checksum.md
+          # Try to make the release-checksum.md immutable to try to prevent modifications
+          sudo chattr +i release-checksum.md
+
+      # Upload "release.zip" to the github release
+      - name: Publish build to github release
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: false
+          append_body: true
+          files: github-action/release.zip
+          body_path: release-checksum.md
