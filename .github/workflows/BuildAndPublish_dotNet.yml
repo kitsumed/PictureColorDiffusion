@@ -42,7 +42,11 @@ jobs:
     - name: Build with 'Release' config to the $BUILD_OUTPUT_PATH env
       # Always run the CLI as a Powershell since we get our env variable for the output using powershell syntax
       shell: pwsh
-      run: dotnet build $env:CSPROJ_PATH --configuration Release --no-restore --output $env:BUILD_OUTPUT_PATH
+      run: |
+        # Get the tag name v*.*.* and remove the "v"
+        VERSION_NUMBER=${{github.ref_name}}#v
+
+        dotnet build $env:CSPROJ_PATH --configuration Release --no-restore --output $env:BUILD_OUTPUT_PATH /p:Version=$env:VERSION_NUMBER /p:AssemblyVersion=$env:VERSION_NUMBER
       
     - name: Test the build
       run: dotnet test $env:CSPROJ_PATH --no-build --verbosity normal
