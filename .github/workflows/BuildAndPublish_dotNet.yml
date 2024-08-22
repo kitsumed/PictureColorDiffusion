@@ -44,8 +44,8 @@ jobs:
       shell: pwsh
       run: |
         # Get the tag name v*.*.* and remove the "v"
-        VERSION_NUMBER=${{github.ref_name}}#v
-
+        VERSION_NUMBER="${GITHUB_REF_NAME#v}"
+        # Build the project
         dotnet build $env:CSPROJ_PATH --configuration Release --no-restore --output $env:BUILD_OUTPUT_PATH /p:Version=$env:VERSION_NUMBER /p:AssemblyVersion=$env:VERSION_NUMBER
       
     - name: Test the build
