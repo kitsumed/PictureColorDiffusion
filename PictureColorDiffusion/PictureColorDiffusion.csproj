@@ -25,10 +25,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <AdditionalFiles Remove="Properties\app.manifest" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
@@ -37,6 +33,8 @@
 
   <ItemGroup>
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.10.0" />
+    <PackageReference Include="System.Text.Json" Version="8.0.4" />
+    <PackageReference Include="YoloV8" Version="4.2.0" />
   </ItemGroup>
 
   <ItemGroup>

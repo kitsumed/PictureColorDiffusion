@@ -82,6 +82,10 @@
 			checkBoxEnablePreview = new CheckBox();
 			buttonStopInference = new Button();
 			buttonInference = new Button();
+			contextMenuStripButtonInference = new ContextMenuStrip(components);
+			DebugYoloV8SegmentationToolStripMenuItem = new ToolStripMenuItem();
+			InferenceYoloV8DetectionsToolStripMenuItem = new ToolStripMenuItem();
+			InferenceYoloV8MaskDifferenceToolStripMenuItem = new ToolStripMenuItem();
 			toolTip1 = new ToolTip(components);
 			groupBoxStableDiffusionAPIConfig.SuspendLayout();
 			groupBoxPictureColorDiffusionConfig.SuspendLayout();
@@ -91,6 +95,7 @@
 			groupBoxInference.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)numericUpDownSeed).BeginInit();
 			((System.ComponentModel.ISupportInitialize)pictureBoxPreview).BeginInit();
+			contextMenuStripButtonInference.SuspendLayout();
 			SuspendLayout();
 			// 
 			// labelPicturePath
@@ -138,10 +143,6 @@
 			buttonSelectPicturesFolder.Text = "Select Folder";
 			buttonSelectPicturesFolder.UseVisualStyleBackColor = true;
 			buttonSelectPicturesFolder.Click += buttonSelectPicture_Click;
-			// 
-			// openFileDialog1
-			// 
-			openFileDialog1.Filter = "Pictures | *.jpeg;*.jpg;*.png";
 			// 
 			// groupBoxStableDiffusionAPIConfig
 			// 
@@ -685,6 +686,7 @@
 			// 
 			// buttonInference
 			// 
+			buttonInference.ContextMenuStrip = contextMenuStripButtonInference;
 			buttonInference.ForeColor = Color.Green;
 			buttonInference.Location = new Point(784, 268);
 			buttonInference.Name = "buttonInference";
@@ -693,6 +695,37 @@
 			buttonInference.Text = "Inference";
 			buttonInference.UseVisualStyleBackColor = true;
 			buttonInference.Click += buttonInference_Click;
+			// 
+			// contextMenuStripButtonInference
+			// 
+			contextMenuStripButtonInference.Items.AddRange(new ToolStripItem[] { DebugYoloV8SegmentationToolStripMenuItem });
+			contextMenuStripButtonInference.Name = "contextMenuStripButtonInference";
+			contextMenuStripButtonInference.Size = new Size(226, 48);
+			// 
+			// DebugYoloV8SegmentationToolStripMenuItem
+			// 
+			DebugYoloV8SegmentationToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
+			DebugYoloV8SegmentationToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { InferenceYoloV8DetectionsToolStripMenuItem, InferenceYoloV8MaskDifferenceToolStripMenuItem });
+			DebugYoloV8SegmentationToolStripMenuItem.Name = "DebugYoloV8SegmentationToolStripMenuItem";
+			DebugYoloV8SegmentationToolStripMenuItem.Size = new Size(225, 22);
+			DebugYoloV8SegmentationToolStripMenuItem.Text = "Debug YoloV8 Segmentation";
+			// 
+			// InferenceYoloV8DetectionsToolStripMenuItem
+			// 
+			InferenceYoloV8DetectionsToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
+			InferenceYoloV8DetectionsToolStripMenuItem.Name = "InferenceYoloV8DetectionsToolStripMenuItem";
+			InferenceYoloV8DetectionsToolStripMenuItem.Size = new Size(249, 22);
+			InferenceYoloV8DetectionsToolStripMenuItem.Text = "Inference YoloV8 detections";
+			InferenceYoloV8DetectionsToolStripMenuItem.ToolTipText = "Only Inference all input picture into the YoloV8\r\nmodel and save the results in the output path.";
+			InferenceYoloV8DetectionsToolStripMenuItem.Click += InferenceYoloV8DetectionsToolStripMenuItem_Click;
+			// 
+			// InferenceYoloV8MaskDifferenceToolStripMenuItem
+			// 
+			InferenceYoloV8MaskDifferenceToolStripMenuItem.Name = "InferenceYoloV8MaskDifferenceToolStripMenuItem";
+			InferenceYoloV8MaskDifferenceToolStripMenuItem.Size = new Size(249, 22);
+			InferenceYoloV8MaskDifferenceToolStripMenuItem.Text = "Inference YoloV8 mask difference";
+			InferenceYoloV8MaskDifferenceToolStripMenuItem.ToolTipText = "Inference all input picture into the YoloV8\r\nmodel and separate the result mask from the\r\noriginal picture. Mask file suffix will be \"_mask\"\r\nand \"_mask_result\".";
+			InferenceYoloV8MaskDifferenceToolStripMenuItem.Click += InferenceYoloV8MaskDifferenceToolStripMenuItem_Click;
 			// 
 			// toolTip1
 			// 
@@ -728,6 +761,7 @@
 			groupBoxInference.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)numericUpDownSeed).EndInit();
 			((System.ComponentModel.ISupportInitialize)pictureBoxPreview).EndInit();
+			contextMenuStripButtonInference.ResumeLayout(false);
 			ResumeLayout(false);
 		}
 
@@ -787,5 +821,9 @@
 		private Label labelSampler;
 		private ComboBox comboBoxSampler;
 		private CheckBox checkBoxIncludeMetadata;
+		private ContextMenuStrip contextMenuStripButtonInference;
+		private ToolStripMenuItem DebugYoloV8SegmentationToolStripMenuItem;
+		private ToolStripMenuItem InferenceYoloV8DetectionsToolStripMenuItem;
+		private ToolStripMenuItem InferenceYoloV8MaskDifferenceToolStripMenuItem;
 	}
 }
