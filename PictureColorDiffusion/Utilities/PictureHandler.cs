@@ -1,5 +1,4 @@
 ﻿using Compunet.YoloV8.Data;
-using ImageMagick;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
@@ -78,22 +77,6 @@ namespace PictureColorDiffusion.Utilities
 			picture.SaveAsBmp(memoryStream);
 			// Create a bitmap with the memory stream
 			return new Bitmap(memoryStream);
-		}
-
-		/// <summary>
-		/// Convert a ImageSharp image to a MagickImage
-		/// </summary>
-		/// <param name="picture">The image</param>
-		/// <returns>A MagickImage</returns>
-		public async static Task<MagickImage> ImageSharpToMagickImage(ImageSharp.Image picture)
-		{
-			using MemoryStream memoryStream = new MemoryStream();
-			// Save the picture to the memory stream
-			await picture.SaveAsPngAsync(memoryStream);
-			// Move the stream position to 0 to prevent magick error
-			memoryStream.Position = 0;
-			// Convert the picture stream into a MagickImage
-			return new MagickImage(memoryStream);
 		}
 
 		/// <summary>

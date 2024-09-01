@@ -1,13 +1,13 @@
 using Compunet.YoloV8;
 using Compunet.YoloV8.Data;
 using Compunet.YoloV8.Plotting;
-using ImageMagick;
 using PictureColorDiffusion.Enums;
 using PictureColorDiffusion.Models;
 using PictureColorDiffusion.Utilities;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Formats.Png.Chunks;
 
 namespace PictureColorDiffusion
 {
@@ -454,28 +454,39 @@ namespace PictureColorDiffusion
 					{
 						// Convert the base64 result to a image
 						ImageSharp.Image generatedImage = await PictureHandler.Base64ToImageSharp(result.images[0]);
-						// Convert the image to a MagickImage
-						MagickImage generatedImageMagick = await PictureHandler.ImageSharpToMagickImage(generatedImage);
-						// If metadata is enabled, set the MagickImage metadata
+
+						// If metadata is enabled, set the comments metadata, stable diffusion webui already include the parameters metadata
+						PngMetadata? generatedImageMetadata;
+						bool isMetadataFound = generatedImage.Metadata.TryGetPngMetadata(out generatedImageMetadata);
 						if (checkBoxIncludeMetadata.Checked)
 						{
-							// Parameters attribute that try to match the stable diffusion webui one
-							generatedImageMagick.SetAttribute("parameters", $"{newPrompt}\nNegative prompt: {newNegativePrompt}\nSteps: {requestModel.steps}, Sampler: {requestModel.sampler_name}, Schedule type: {requestModel.scheduler}, CFG scale: {requestModel.cfg_scale}, Seed: {requestModel.seed}, Size: {requestModel.width}x{requestModel.height}");
-							// Comments attribute with info about the app version & app settings
-							generatedImageMagick.SetAttribute("comments", $"Made with PictureColorDiffusion v{Application.ProductVersion} using mode '{SelectedMode}'.\n" +
+							// If the metadata exist as a png
+							if (isMetadataFound && generatedImageMetadata != null) 
+							{
+								// Add the "comments" key
+								generatedImageMetadata.TextData.Add(new PngTextData("comments", $"Made with PictureColorDiffusion v{Application.ProductVersion} using mode '{SelectedMode}'.\n" +
 								/// Additional info about the generation
 								$"\nControlnet lowvram: {checkBoxControlNetLowvram.Checked}" +
 								$"\nReference picture: {controlNetReferenceUnitArg != null}" +
 								$"\nKeep original size: {checkBoxKeepOriginalSize.Checked}" +
-								$"\nUse interrogation: {checkBoxUseInterrogation.Checked}");
+								$"\nUse interrogation: {checkBoxUseInterrogation.Checked}", string.Empty, string.Empty));
+							}
 						}
-						generatedImageMagick.RemoveAttribute("date:create");
-						generatedImageMagick.RemoveAttribute("date:modify");
-						generatedImageMagick.RemoveAttribute("date:timestamp");
+						else // Remove the metadata added by stable diffusion webui
+						{
+							// If the metadata exist as a png
+							if (isMetadataFound && generatedImageMetadata != null)
+							{
+								// Get the list of all text data stored
+								List<PngTextData> textDataList = (List<PngTextData>)generatedImageMetadata.TextData;
+								// Remove the content of keyword named "parameters" since Stable diffusion webui add the keyword by default
+								textDataList.RemoveAll(item => item.Keyword == "parameters");
+							}
+						}
+
 						// Save the picture in the output directory with the same name
 						// We save as PNG as the generated images returned by stable diffusion seems to always have the PNG mime type
-						await generatedImageMagick.WriteAsync(Path.Combine(textBoxPictureOutputPath.Text, Path.GetFileNameWithoutExtension(filePath) + ".png"), MagickFormat.Png);
-						generatedImageMagick.Dispose();
+						await generatedImage.SaveAsPngAsync(Path.Combine(textBoxPictureOutputPath.Text, Path.GetFileNameWithoutExtension(filePath) + ".png"), new PngEncoder() { CompressionLevel = PngCompressionLevel.DefaultCompression });
 						//generatedImage.Save(Path.Combine(textBoxPictureOutputPath.Text, Path.GetFileNameWithoutExtension(filePath) + ".png"), ImageFormat.Png);
 						if (checkBoxEnablePreview.Checked)
 						{
