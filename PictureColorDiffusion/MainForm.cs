@@ -566,9 +566,9 @@ namespace PictureColorDiffusion
 					status = $"Completed in {endTimeSpan.Subtract(startTimeSpan).ToString("c")}",
 					completionPercent = 100,
 				});
-				// Free the ram from the yolov8 model since inference ended.
+				// Free the ram from the yolov8 model since inference ended
 				yoloV8Predictor?.Dispose();
-				// Force GC to collect to prevent high memory usage.
+				// Force GC to collect to prevent high memory usage
 				GC.Collect();
 				GC.WaitForPendingFinalizers();
 				GC.Collect();
@@ -637,6 +637,8 @@ namespace PictureColorDiffusion
 					interrogationCompleted++;
 				}
 
+				// Free the ram from the yolov8 model since inference ended
+				predictor?.Dispose();
 				// Update progress as completed
 				InferenceProgress.Report(new InferenceProgressModel()
 				{
@@ -705,6 +707,8 @@ namespace PictureColorDiffusion
 					resultMask?.Dispose();
 				}
 
+				// Free the ram from the yolov8 model since inference ended
+				predictor?.Dispose();
 				// Update progress as completed
 				InferenceProgress.Report(new InferenceProgressModel()
 				{
