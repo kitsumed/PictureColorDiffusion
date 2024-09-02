@@ -1,7 +1,14 @@
-using ImageMagick;
+using Compunet.YoloV8;
+using Compunet.YoloV8.Data;
+using Compunet.YoloV8.Plotting;
 using PictureColorDiffusion.Enums;
 using PictureColorDiffusion.Models;
 using PictureColorDiffusion.Utilities;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Formats.Png.Chunks;
+using SixLabors.ImageSharp.Processing;
 
 namespace PictureColorDiffusion
 {
@@ -27,6 +34,11 @@ namespace PictureColorDiffusion
 		/// </summary>
 		private string? SelectedMode = null;
 
+		/// <summary>
+		/// Hard-coded path of the YoloV8 model for speech bubble detection. Same directory as main executable
+		/// </summary>
+		private readonly string YoloV8ModelPath = $"{AppDomain.CurrentDomain.BaseDirectory}manga_model.onnx";
+
 		public MainForm()
 		{
 			InitializeComponent();
@@ -44,6 +56,9 @@ namespace PictureColorDiffusion
 		{
 			// Set default sampler to Euler
 			comboBoxSampler.SelectedIndex = 0;
+			// Set supported files as the only allowed files on the open file dialog
+			string supportedFilesFilter = "*." + string.Join(";*.", PictureHandler.SupportedExtensions);
+			openFileDialog1.Filter = "Pictures | " + supportedFilesFilter;
 			// Verify if the default ApiEndpoint is valid or invalid at startup
 			SetApplicationState(ApplicationStatesEnum.waiting_for_api);
 			buttonVerifyApiEndpoint.PerformClick();
@@ -64,7 +79,7 @@ namespace PictureColorDiffusion
 				Uri newApiEndpoint = new Uri(textBoxApiEndpoint.Text);
 				// Create the stable diffusion api class to interact with the api
 				StableAPI = new StableDiffusionAPI(newApiEndpoint);
-				
+
 				// Verify that the api endpoint is working
 				bool isVerified = await StableAPI.VerifyEndpointAsync();
 				SetApplicationState(isVerified ? ApplicationStatesEnum.waiting_for_inference : ApplicationStatesEnum.waiting_for_api);
@@ -322,14 +337,14 @@ namespace PictureColorDiffusion
 		private async void buttonInference_Click(object sender, EventArgs e)
 		{
 			// Verify if every required fields on the UI have been fileld
-			if (!CanInferenceStart()) 
+			if (!CanInferenceStart())
 			{
-				MessageBox.Show("Some required fields have not been filled.","Inference", MessageBoxButtons.OK,MessageBoxIcon.Warning);
+				MessageBox.Show("Some required fields have not been filled.", "Inference", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				return; // stop execution
 			}
 
 			// If the picture path is a directory, add the path of all file into the array, else (picture path is a file), only add one path to the array
-			string[] filesPath = Directory.Exists(textBoxPicturePath.Text) ? Directory.GetFiles(textBoxPicturePath.Text) : [textBoxPicturePath.Text];
+			string[] filesPath = Directory.Exists(textBoxPicturePath.Text) ? PictureHandler.GetSupportedFilesFromDirectory(textBoxPicturePath.Text) : [textBoxPicturePath.Text];
 			PictureColorDiffusionModeModel? currentModeConfiguration = PictureColorDiffusionModes.GetModeConfiguration(SelectedMode);
 			if (currentModeConfiguration != null)
 			{
@@ -338,8 +353,14 @@ namespace PictureColorDiffusion
 				// Create cancellation token for the inference
 				InferenceCancellationTokenSource = new CancellationTokenSource();
 
+
+				// Store the number of generation completed
 				int generationCompleted = 0;
+				// Timespan of when the inference was started
 				TimeSpan startTimeSpan = new TimeSpan(DateTime.Now.Ticks);
+				// Store the YoloV8 segmentation model for the whole inference loop, if null, no model are loaded.
+				YoloV8Predictor? yoloV8Predictor = null;
+
 				// Send fake progress at 0%
 				InferenceProgress.Report(new InferenceProgressModel()
 				{
@@ -368,7 +389,7 @@ namespace PictureColorDiffusion
 						guidance_end = 0.5,
 						image = new StableDiffusionExtensionControlNetArgImage()
 						{
-							image = PictureHandler.ImageToBase64(await PictureHandler.LoadAsImage(textBoxReferencePicturePath.Text))
+							image = PictureHandler.ImageSharpToBase64(await PictureHandler.LoadAsImageSharp(textBoxReferencePicturePath.Text))
 						}
 					};
 				}
@@ -377,15 +398,17 @@ namespace PictureColorDiffusion
 				{
 					// If a cancellation was requested, exit the foreach loop
 					if (InferenceCancellationTokenSource.IsCancellationRequested) break;
+					// Calculate the batch completion on a 0-100% (generationCompleted of filesPath.Length on 100%)
+					int completionPercent = (int)Math.Round((double)generationCompleted / filesPath.Length * 100);
 
-					Image originalImage = await PictureHandler.LoadAsImage(filePath);
-					string originalImageBase64 = PictureHandler.ImageToBase64(originalImage);
+					ImageSharp.Image<Rgba32> originalImage = await PictureHandler.LoadAsImageSharp(filePath);
+					string originalImageBase64 = PictureHandler.ImageSharpToBase64(originalImage);
 					string newPrompt = currentModeConfiguration.prompt + textBoxPrompt.Text;
 					string newNegativePrompt = currentModeConfiguration.negative_prompt + textBoxNegativePrompt.Text;
 					// Dynamically resize the picture to the max size allowed by the current mode
 					// if the keep original size checkbox isn't checked
-					Size originalImageSize = checkBoxKeepOriginalSize.Checked ? originalImage.Size : PictureHandler.DynamicResize(originalImage.Size, currentModeConfiguration.dynamicResizeMax);
-					
+					ImageSharp.Size originalImageSize = checkBoxKeepOriginalSize.Checked ? originalImage.Size : PictureHandler.DynamicResize(originalImage.Size, currentModeConfiguration.dynamicResizeMax);
+
 					// If interrogation is enabled
 					if (checkBoxUseInterrogation.Checked)
 					{
@@ -396,6 +419,34 @@ namespace PictureColorDiffusion
 						{
 							newPrompt += PictureColorDiffusionFilter.Process(interrogateResponse.caption);
 						}
+					}
+
+					// Store the content of the originalImage that matched the mask of the YoloV8 model
+					Image<Rgba32>? originalImageMaskContent = null;
+					// If YoloV8 segmentation is enabled
+					if (checkBoxUseYoloV8.Checked) 
+					{
+						InferenceProgress.Report(new InferenceProgressModel()
+						{
+							status = "Interrogating YoloV8 model",
+							completionPercent = completionPercent,
+						});
+						// Load the yoloV8 model if it wasn't loaded before
+						if (yoloV8Predictor == null)
+						{
+							yoloV8Predictor = YoloV8Predictor.Create(YoloV8ModelPath);
+						}
+						// Inference the original image on the model
+						SegmentationResult segResult = await yoloV8Predictor.SegmentAsync(originalImage);
+						
+						// Get the mask from the inference segmentation results
+						Image<Rgba32> resultMask;
+						PictureHandler.GetImageMaskFromSegmentationResult(segResult, out resultMask);
+
+						// Get the content on originalImage that matches the mask
+						originalImageMaskContent = PictureHandler.ExtractImageFromMask(originalImage, resultMask);
+						// Free memory from the results mask
+						resultMask?.Dispose();
 					}
 
 					// Get the controlnet extension units configuration for the current mode
@@ -430,8 +481,7 @@ namespace PictureColorDiffusion
 					InferenceProgress.Report(new InferenceProgressModel()
 					{
 						status = "Generating picture",
-						// Get % of generationCompleted on filesPath.Length from 0-100%
-						completionPercent = (int)Math.Round((double)generationCompleted / filesPath.Length * 100),
+						completionPercent = completionPercent,
 					});
 
 					// Generate the picture
@@ -439,46 +489,64 @@ namespace PictureColorDiffusion
 					if (result != null)
 					{
 						// Convert the base64 result to a image
-						Image generatedImage = PictureHandler.Base64ToImage(result.images[0]);
-						// Convert the image to a MagickImage
-						MagickImage generatedImageMagick = PictureHandler.ImageToMagickImage(generatedImage);
-						// If metadata is enabled, set the MagickImage metadata
-						if (checkBoxIncludeMetadata.Checked) 
+						ImageSharp.Image generatedImage = await PictureHandler.Base64ToImageSharp(result.images[0]);
+
+						// If YoloV8 segmentation is enabled and mask exist
+						if (checkBoxUseYoloV8.Checked && originalImageMaskContent != null)
 						{
-							// Parameters attribute that try to match the stable diffusion webui one
-							generatedImageMagick.SetAttribute("parameters", $"{newPrompt}\nNegative prompt: {newNegativePrompt}\nSteps: {requestModel.steps}, Sampler: {requestModel.sampler_name}, Schedule type: {requestModel.scheduler}, CFG scale: {requestModel.cfg_scale}, Seed: {requestModel.seed}, Size: {requestModel.width}x{requestModel.height}");
-							// Comments attribute with info about the app version & app settings
-							generatedImageMagick.SetAttribute("comments", $"Made with PictureColorDiffusion v{Application.ProductVersion} using mode '{SelectedMode}'.\n" +
+							// Resize the mask to the same size as the generated picture
+							originalImageMaskContent.Mutate(m => m.Resize(generatedImage.Size));
+							// Add the mask on top of the generatedImage
+							generatedImage.Mutate(m => m.DrawImage(originalImageMaskContent, 1f));
+							// Free memory from the content mask
+							originalImageMaskContent?.Dispose();
+						}
+
+						// If metadata is enabled, set the comments metadata, stable diffusion webui already include the parameters metadata
+						PngMetadata? generatedImageMetadata;
+						bool isMetadataFound = generatedImage.Metadata.TryGetPngMetadata(out generatedImageMetadata);
+						if (checkBoxIncludeMetadata.Checked)
+						{
+							// If the metadata exist as a png
+							if (isMetadataFound && generatedImageMetadata != null) 
+							{
+								// Add the "comments" key
+								generatedImageMetadata.TextData.Add(new PngTextData("comments", $"Made with PictureColorDiffusion v{Application.ProductVersion} using mode '{SelectedMode}'.\n" +
 								/// Additional info about the generation
 								$"\nControlnet lowvram: {checkBoxControlNetLowvram.Checked}" +
 								$"\nReference picture: {controlNetReferenceUnitArg != null}" +
 								$"\nKeep original size: {checkBoxKeepOriginalSize.Checked}" +
-								$"\nUse interrogation: {checkBoxUseInterrogation.Checked}");
+								$"\nUse interrogation: {checkBoxUseInterrogation.Checked}", string.Empty, string.Empty));
+							}
 						}
-						generatedImageMagick.RemoveAttribute("date:create");
-						generatedImageMagick.RemoveAttribute("date:modify");
-						generatedImageMagick.RemoveAttribute("date:timestamp");
+						else // Remove the metadata added by stable diffusion webui
+						{
+							// If the metadata exist as a png
+							if (isMetadataFound && generatedImageMetadata != null)
+							{
+								// Get the list of all text data stored
+								List<PngTextData> textDataList = (List<PngTextData>)generatedImageMetadata.TextData;
+								// Remove the content of keyword named "parameters" since Stable diffusion webui add the keyword by default
+								textDataList.RemoveAll(item => item.Keyword == "parameters");
+							}
+						}
+						
 						// Save the picture in the output directory with the same name
 						// We save as PNG as the generated images returned by stable diffusion seems to always have the PNG mime type
-						await generatedImageMagick.WriteAsync(Path.Combine(textBoxPictureOutputPath.Text, Path.GetFileNameWithoutExtension(filePath) + ".png"), MagickFormat.Png);
-						generatedImageMagick.Dispose();
-						//generatedImage.Save(Path.Combine(textBoxPictureOutputPath.Text, Path.GetFileNameWithoutExtension(filePath) + ".png"), ImageFormat.Png);
+						await generatedImage.SaveAsPngAsync(Path.Combine(textBoxPictureOutputPath.Text, Path.GetFileNameWithoutExtension(filePath) + ".png"), new PngEncoder() { CompressionLevel = PngCompressionLevel.DefaultCompression });
+
 						if (checkBoxEnablePreview.Checked)
 						{
 							// Dispose of the previous generated image
 							pictureBoxPreview.Image?.Dispose();
 							// Set the current image
-							pictureBoxPreview.Image = generatedImage;
+							pictureBoxPreview.Image = PictureHandler.ImageSharpToBitmap(generatedImage);
 						}
 						else
 						{
 							// Dispose of the current image
 							generatedImage.Dispose();
 						}
-						// Force GC to collect to prevent going up to +2GB memory usage during batches. Prevent conflicting with stable diffusion generation
-						GC.Collect();
-						GC.WaitForPendingFinalizers();
-						GC.Collect();
 					}
 					else
 					{
@@ -498,6 +566,13 @@ namespace PictureColorDiffusion
 					status = $"Completed in {endTimeSpan.Subtract(startTimeSpan).ToString("c")}",
 					completionPercent = 100,
 				});
+				// Free the ram from the yolov8 model since inference ended
+				yoloV8Predictor?.Dispose();
+				// Force GC to collect to prevent high memory usage
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+				GC.Collect();
+				// Change application state to recieve a new inference request
 				SetApplicationState(ApplicationStatesEnum.waiting_for_inference);
 			}
 			else
@@ -517,6 +592,136 @@ namespace PictureColorDiffusion
 				status = "Waiting the end of the current generation before cancelling...",
 				completionPercent = 0,
 			});
+		}
+
+		/// <summary>
+		/// Called when the user click on the "Inference YoloV8 Detections " toolStripMenu on the Inference button
+		/// Used to debug the detections of the YoloV8 model
+		/// </summary>
+		private async void InferenceYoloV8DetectionsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			// Verify that a input & output path was set
+			if (!string.IsNullOrEmpty(textBoxPicturePath.Text) && !string.IsNullOrEmpty(textBoxPictureOutputPath.Text))
+			{
+				// Create cancellation token for the inference
+				InferenceCancellationTokenSource = new CancellationTokenSource();
+				// Set application to inference mode
+				SetApplicationState(ApplicationStatesEnum.currently_in_inference);
+
+				string[] filesPath = Directory.Exists(textBoxPicturePath.Text) ? PictureHandler.GetSupportedFilesFromDirectory(textBoxPicturePath.Text) : [textBoxPicturePath.Text];
+				// Load the yoloV8 model
+				using YoloV8Predictor predictor = YoloV8Predictor.Create(YoloV8ModelPath);
+
+				int interrogationCompleted = 0;
+				foreach (string filePath in filesPath)
+				{
+					// If a cancellation was requested, exit the foreach loop
+					if (InferenceCancellationTokenSource.IsCancellationRequested) break;
+
+					// Load the picture as a Imagesharp
+					using ImageSharp.Image currentPicture = await PictureHandler.LoadAsImageSharp(filePath);
+					
+					// Update progress
+					InferenceProgress.Report(new InferenceProgressModel()
+					{
+						status = "DEBUG | Interrogating YoloV8 model",
+						// Get % of interrogationCompleted on filesPath.Length from 0-100%
+						completionPercent = (int)Math.Round((double)interrogationCompleted / filesPath.Length * 100),
+					});
+					// Inference the picture on the model
+					SegmentationResult result = await predictor.SegmentAsync(currentPicture);
+					// Take the model detections (mask & confidences) and put them on the original image
+					using ImageSharp.Image imageWithResults = await result.PlotImageAsync(currentPicture);
+					// Save the picture as a png with best compression (smaller file size)
+					await imageWithResults.SaveAsPngAsync(Path.Combine(textBoxPictureOutputPath.Text, Path.GetFileNameWithoutExtension(filePath) + ".png"), new PngEncoder() { CompressionLevel = PngCompressionLevel.BestCompression });
+					interrogationCompleted++;
+				}
+
+				// Free the ram from the yolov8 model since inference ended
+				predictor?.Dispose();
+				// Update progress as completed
+				InferenceProgress.Report(new InferenceProgressModel()
+				{
+					status = "DEBUG | Finished interrogating YoloV8 model",
+					completionPercent = 100,
+				});
+				// Set application to waiting for inference mode
+				SetApplicationState(ApplicationStatesEnum.waiting_for_inference);
+			}
+			else
+			{
+				MessageBox.Show("Please select a valid input & output path first.", "Inference YoloV8 Detections", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			}
+		}
+
+		/// <summary>
+		/// Called when the user click on the "Inference YoloV8 Mask Difference " toolStripMenu on the Inference button
+		/// Used to debug the YoloV8 Mask separation
+		/// </summary>
+		private async void InferenceYoloV8MaskDifferenceToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			// Verify that a input & output path was set
+			if (!string.IsNullOrEmpty(textBoxPicturePath.Text) && !string.IsNullOrEmpty(textBoxPictureOutputPath.Text))
+			{
+				// Create cancellation token for the inference
+				InferenceCancellationTokenSource = new CancellationTokenSource();
+				// Set application to inference mode
+				SetApplicationState(ApplicationStatesEnum.currently_in_inference);
+
+				string[] filesPath = Directory.Exists(textBoxPicturePath.Text) ? PictureHandler.GetSupportedFilesFromDirectory(textBoxPicturePath.Text) : [textBoxPicturePath.Text];
+				// Load the yoloV8 model
+				using YoloV8Predictor predictor = YoloV8Predictor.Create(YoloV8ModelPath);
+
+				int interrogationCompleted = 0;
+				foreach (string filePath in filesPath)
+				{
+					// If a cancellation was requested, exit the foreach loop
+					if (InferenceCancellationTokenSource.IsCancellationRequested) break;
+
+					// Load the picture as a Imagesharp Image<Rgba32>
+					using ImageSharp.Image<Rgba32> currentPicture = await PictureHandler.LoadAsImageSharp(filePath);
+
+					// Update progress
+					InferenceProgress.Report(new InferenceProgressModel()
+					{
+						status = "DEBUG | Interrogating YoloV8 model",
+						// Get % of interrogationCompleted on filesPath.Length from 0-100%
+						completionPercent = (int)Math.Round((double)interrogationCompleted / filesPath.Length * 100),
+					});
+					// Inference the picture on the model
+					SegmentationResult result = await predictor.SegmentAsync(currentPicture);
+
+					// Get the mask from the inference results
+					Image<Rgba32> resultMask;
+					PictureHandler.GetImageMaskFromSegmentationResult(result, out resultMask);
+					// Save the mask
+					await resultMask.SaveAsPngAsync(Path.Combine(textBoxPictureOutputPath.Text, Path.GetFileNameWithoutExtension(filePath) + "_mask.png"), new PngEncoder() { CompressionLevel = PngCompressionLevel.BestCompression });
+
+					// Get the content on currentPicture that matches the mask
+					using Image<Rgba32> currentPictureMaskContent = PictureHandler.ExtractImageFromMask(currentPicture, resultMask);
+
+					// Save the content that matched the mask
+					await currentPictureMaskContent.SaveAsPngAsync(Path.Combine(textBoxPictureOutputPath.Text, Path.GetFileNameWithoutExtension(filePath) + "_mask_result.png"), new PngEncoder() { CompressionLevel = PngCompressionLevel.BestCompression });
+					interrogationCompleted++;
+					// Disposes of images that could not use "using"
+					resultMask?.Dispose();
+				}
+
+				// Free the ram from the yolov8 model since inference ended
+				predictor?.Dispose();
+				// Update progress as completed
+				InferenceProgress.Report(new InferenceProgressModel()
+				{
+					status = "DEBUG | Finished interrogating YoloV8 model",
+					completionPercent = 100,
+				});
+				// Set application to waiting for inference mode
+				SetApplicationState(ApplicationStatesEnum.waiting_for_inference);
+			}
+			else
+			{
+				MessageBox.Show("Please select a valid input & output path first.", "Inference YoloV8 Mask Difference", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			}
 		}
 
 		/// <summary>

@@ -20,7 +20,7 @@ namespace PictureColorDiffusion.Models
 		/// <summary>
 		/// The maximum picture size allowed before it get dynamically resized
 		/// </summary>
-		public required Size dynamicResizeMax;
+		public required ImageSharp.Size dynamicResizeMax;
 
 		/// <summary>
 		/// Name of the model used for the interogation on the original image

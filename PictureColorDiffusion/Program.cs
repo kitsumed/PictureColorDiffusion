@@ -1,3 +1,7 @@
+// We globally declare SixLabors.ImageSharp with the "ImageSharp" alias since it conflict with System.Drawing
+// when using simple class names, and repeating "SixLabors.ImageSharp.***" each time feel messy
+global using ImageSharp = SixLabors.ImageSharp;
+
 namespace PictureColorDiffusion
 {
 	internal static class Program

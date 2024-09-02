@@ -33,7 +33,7 @@ namespace PictureColorDiffusion.Utilities
 					prompt = "detailed (official style|style parody), (comic|cover|manga|5koma|4koma|3koma):1.1, masterpiece, highres, blank speech bubble, simple background, textless version, emphasis lines, ",
 					negative_prompt = "(greyscale:1.1), monochrome, deformed, jpeg artifacts, lineart, sepia, low quality, lowres, worst quality, brown theme, grey theme, light brown background, bad anatomy, high contrast, bad, screentones, neon palette, color issue, purple theme, black theme, [blue theme|orange theme]:0.5, ",
 					// Japanese JB5 paper size (in pixels) divided by 2 (taken from papersizes.io)
-					dynamicResizeMax = new Size(1075 ,1518),
+					dynamicResizeMax = new ImageSharp.Size(1075 ,1518),
 					interogateModel = "deepdanbooru",
 					controlNetModelNamePerUnit = ["control_v11p_sd15s2_lineart_anime", "control_v11p_sd15_softedge"],
 					controlNetUnits = [
@@ -46,7 +46,6 @@ namespace PictureColorDiffusion.Utilities
 						guidance_end = 1,
 						control_mode = "Balanced",
 						resize_mode = "Just Resize",
-						//pixel_perfect = true
 						pixel_perfect = false,
 						processor_res = 0,
 					},
