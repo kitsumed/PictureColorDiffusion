@@ -8,6 +8,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Formats.Png.Chunks;
+using SixLabors.ImageSharp.Processing;
 
 namespace PictureColorDiffusion
 {
@@ -352,8 +353,14 @@ namespace PictureColorDiffusion
 				// Create cancellation token for the inference
 				InferenceCancellationTokenSource = new CancellationTokenSource();
 
+
+				// Store the number of generation completed
 				int generationCompleted = 0;
+				// Timespan of when the inference was started
 				TimeSpan startTimeSpan = new TimeSpan(DateTime.Now.Ticks);
+				// Store the YoloV8 segmentation model for the whole inference loop, if null, no model are loaded.
+				YoloV8Predictor? yoloV8Predictor = null;
+
 				// Send fake progress at 0%
 				InferenceProgress.Report(new InferenceProgressModel()
 				{
@@ -391,8 +398,10 @@ namespace PictureColorDiffusion
 				{
 					// If a cancellation was requested, exit the foreach loop
 					if (InferenceCancellationTokenSource.IsCancellationRequested) break;
+					// Calculate the batch completion on a 0-100% (generationCompleted of filesPath.Length on 100%)
+					int completionPercent = (int)Math.Round((double)generationCompleted / filesPath.Length * 100);
 
-					ImageSharp.Image originalImage = await PictureHandler.LoadAsImageSharp(filePath);
+					ImageSharp.Image<Rgba32> originalImage = await PictureHandler.LoadAsImageSharp(filePath);
 					string originalImageBase64 = PictureHandler.ImageSharpToBase64(originalImage);
 					string newPrompt = currentModeConfiguration.prompt + textBoxPrompt.Text;
 					string newNegativePrompt = currentModeConfiguration.negative_prompt + textBoxNegativePrompt.Text;
@@ -410,6 +419,34 @@ namespace PictureColorDiffusion
 						{
 							newPrompt += PictureColorDiffusionFilter.Process(interrogateResponse.caption);
 						}
+					}
+
+					// Store the content of the originalImage that matched the mask of the YoloV8 model
+					Image<Rgba32>? originalImageMaskContent = null;
+					// If YoloV8 segmentation is enabled
+					if (checkBoxUseYoloV8.Checked) 
+					{
+						InferenceProgress.Report(new InferenceProgressModel()
+						{
+							status = "Interrogating YoloV8 model",
+							completionPercent = completionPercent,
+						});
+						// Load the yoloV8 model if it wasn't loaded before
+						if (yoloV8Predictor == null)
+						{
+							yoloV8Predictor = YoloV8Predictor.Create(YoloV8ModelPath);
+						}
+						// Inference the original image on the model
+						SegmentationResult segResult = await yoloV8Predictor.SegmentAsync(originalImage);
+						
+						// Get the mask from the inference segmentation results
+						Image<Rgba32> resultMask;
+						PictureHandler.GetImageMaskFromSegmentationResult(segResult, out resultMask);
+
+						// Get the content on originalImage that matches the mask
+						originalImageMaskContent = PictureHandler.ExtractImageFromMask(originalImage, resultMask);
+						// Free memory from the results mask
+						resultMask?.Dispose();
 					}
 
 					// Get the controlnet extension units configuration for the current mode
@@ -444,8 +481,7 @@ namespace PictureColorDiffusion
 					InferenceProgress.Report(new InferenceProgressModel()
 					{
 						status = "Generating picture",
-						// Get % of generationCompleted on filesPath.Length from 0-100%
-						completionPercent = (int)Math.Round((double)generationCompleted / filesPath.Length * 100),
+						completionPercent = completionPercent,
 					});
 
 					// Generate the picture
@@ -454,6 +490,17 @@ namespace PictureColorDiffusion
 					{
 						// Convert the base64 result to a image
 						ImageSharp.Image generatedImage = await PictureHandler.Base64ToImageSharp(result.images[0]);
+
+						// If YoloV8 segmentation is enabled and mask exist
+						if (checkBoxUseYoloV8.Checked && originalImageMaskContent != null)
+						{
+							// Resize the mask to the same size as the generated picture
+							originalImageMaskContent.Mutate(m => m.Resize(generatedImage.Size));
+							// Add the mask on top of the generatedImage
+							generatedImage.Mutate(m => m.DrawImage(originalImageMaskContent, 1f));
+							// Free memory from the content mask
+							originalImageMaskContent?.Dispose();
+						}
 
 						// If metadata is enabled, set the comments metadata, stable diffusion webui already include the parameters metadata
 						PngMetadata? generatedImageMetadata;
@@ -483,11 +530,11 @@ namespace PictureColorDiffusion
 								textDataList.RemoveAll(item => item.Keyword == "parameters");
 							}
 						}
-
+						
 						// Save the picture in the output directory with the same name
 						// We save as PNG as the generated images returned by stable diffusion seems to always have the PNG mime type
 						await generatedImage.SaveAsPngAsync(Path.Combine(textBoxPictureOutputPath.Text, Path.GetFileNameWithoutExtension(filePath) + ".png"), new PngEncoder() { CompressionLevel = PngCompressionLevel.DefaultCompression });
-						//generatedImage.Save(Path.Combine(textBoxPictureOutputPath.Text, Path.GetFileNameWithoutExtension(filePath) + ".png"), ImageFormat.Png);
+
 						if (checkBoxEnablePreview.Checked)
 						{
 							// Dispose of the previous generated image
@@ -500,10 +547,6 @@ namespace PictureColorDiffusion
 							// Dispose of the current image
 							generatedImage.Dispose();
 						}
-						// Force GC to collect to prevent going up to +2GB memory usage during batches. Prevent conflicting with stable diffusion generation
-						GC.Collect();
-						GC.WaitForPendingFinalizers();
-						GC.Collect();
 					}
 					else
 					{
@@ -523,6 +566,13 @@ namespace PictureColorDiffusion
 					status = $"Completed in {endTimeSpan.Subtract(startTimeSpan).ToString("c")}",
 					completionPercent = 100,
 				});
+				// Free the ram from the yolov8 model since inference ended.
+				yoloV8Predictor?.Dispose();
+				// Force GC to collect to prevent high memory usage.
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+				GC.Collect();
+				// Change application state to recieve a new inference request
 				SetApplicationState(ApplicationStatesEnum.waiting_for_inference);
 			}
 			else

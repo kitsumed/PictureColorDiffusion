@@ -87,6 +87,7 @@
 			InferenceYoloV8DetectionsToolStripMenuItem = new ToolStripMenuItem();
 			InferenceYoloV8MaskDifferenceToolStripMenuItem = new ToolStripMenuItem();
 			toolTip1 = new ToolTip(components);
+			checkBoxUseYoloV8 = new CheckBox();
 			groupBoxStableDiffusionAPIConfig.SuspendLayout();
 			groupBoxPictureColorDiffusionConfig.SuspendLayout();
 			groupBoxControlnetConfiguration.SuspendLayout();
@@ -478,6 +479,7 @@
 			// 
 			// groupBoxInference
 			// 
+			groupBoxInference.Controls.Add(checkBoxUseYoloV8);
 			groupBoxInference.Controls.Add(checkBoxIncludeMetadata);
 			groupBoxInference.Controls.Add(labelSampler);
 			groupBoxInference.Controls.Add(comboBoxSampler);
@@ -521,7 +523,7 @@
 			// 
 			labelSampler.AutoSize = true;
 			labelSampler.ForeColor = Color.WhiteSmoke;
-			labelSampler.Location = new Point(11, 162);
+			labelSampler.Location = new Point(11, 196);
 			labelSampler.Name = "labelSampler";
 			labelSampler.Size = new Size(80, 17);
 			labelSampler.TabIndex = 114;
@@ -532,7 +534,7 @@
 			comboBoxSampler.DropDownStyle = ComboBoxStyle.DropDownList;
 			comboBoxSampler.FormattingEnabled = true;
 			comboBoxSampler.Items.AddRange(new object[] { "Euler", "Euler a", "DDIM", "LCM", "DPM++ 2M Karras" });
-			comboBoxSampler.Location = new Point(97, 159);
+			comboBoxSampler.Location = new Point(97, 193);
 			comboBoxSampler.Name = "comboBoxSampler";
 			comboBoxSampler.Size = new Size(141, 25);
 			comboBoxSampler.TabIndex = 113;
@@ -574,7 +576,7 @@
 			// 
 			labelSeed.AutoSize = true;
 			labelSeed.ForeColor = Color.WhiteSmoke;
-			labelSeed.Location = new Point(11, 132);
+			labelSeed.Location = new Point(11, 166);
 			labelSeed.Name = "labelSeed";
 			labelSeed.Size = new Size(56, 17);
 			labelSeed.TabIndex = 110;
@@ -582,7 +584,7 @@
 			// 
 			// numericUpDownSeed
 			// 
-			numericUpDownSeed.Location = new Point(73, 130);
+			numericUpDownSeed.Location = new Point(73, 164);
 			numericUpDownSeed.Maximum = new decimal(new int[] { int.MaxValue, 0, 0, 0 });
 			numericUpDownSeed.Minimum = new decimal(new int[] { 1, 0, 0, int.MinValue });
 			numericUpDownSeed.Name = "numericUpDownSeed";
@@ -700,7 +702,7 @@
 			// 
 			contextMenuStripButtonInference.Items.AddRange(new ToolStripItem[] { DebugYoloV8SegmentationToolStripMenuItem });
 			contextMenuStripButtonInference.Name = "contextMenuStripButtonInference";
-			contextMenuStripButtonInference.Size = new Size(226, 48);
+			contextMenuStripButtonInference.Size = new Size(226, 26);
 			// 
 			// DebugYoloV8SegmentationToolStripMenuItem
 			// 
@@ -731,6 +733,20 @@
 			// 
 			toolTip1.ToolTipIcon = ToolTipIcon.Info;
 			toolTip1.ToolTipTitle = "Info";
+			// 
+			// checkBoxUseYoloV8
+			// 
+			checkBoxUseYoloV8.AutoSize = true;
+			checkBoxUseYoloV8.Checked = true;
+			checkBoxUseYoloV8.CheckState = CheckState.Checked;
+			checkBoxUseYoloV8.ForeColor = Color.WhiteSmoke;
+			checkBoxUseYoloV8.Location = new Point(11, 131);
+			checkBoxUseYoloV8.Name = "checkBoxUseYoloV8";
+			checkBoxUseYoloV8.Size = new Size(211, 21);
+			checkBoxUseYoloV8.TabIndex = 116;
+			checkBoxUseYoloV8.Text = "Use YoloV8 segmentation";
+			toolTip1.SetToolTip(checkBoxUseYoloV8, "Inference the original picture with a YoloV8 segmentation model\r\nto copy the matching parts of the original image on top of the\r\ngenerated image (colored).");
+			checkBoxUseYoloV8.UseVisualStyleBackColor = true;
 			// 
 			// MainForm
 			// 
@@ -825,5 +841,6 @@
 		private ToolStripMenuItem DebugYoloV8SegmentationToolStripMenuItem;
 		private ToolStripMenuItem InferenceYoloV8DetectionsToolStripMenuItem;
 		private ToolStripMenuItem InferenceYoloV8MaskDifferenceToolStripMenuItem;
+		private CheckBox checkBoxUseYoloV8;
 	}
 }
