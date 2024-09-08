@@ -9,7 +9,7 @@ PictureColorDiffusion is a program that automate 2d colorization of drawings / m
     * Need to be run with the `--api` argument.
 * [ControlNet extension for the Stable Diffusion WebUI](https://github.com/Mikubill/sd-webui-controlnet)
 > [!TIP]
-> You can bypass the Stable Diffusion API Endpoint verification in the application with the shortcut Ctrl+Shift+B, keep in mind that some issues will arise if you do so. The colorization of images won't work, but you will be able to try your YoloV8 model by right clicking on the inference button. 
+> You can bypass the Stable Diffusion API Endpoint verification in the application with the shortcut `Ctrl+Shift+B`, keep in mind that some issues will arise if you do so. The colorization of images won't work, but you will be able to try your YoloV8 model by right clicking on the inference button. 
 ## Installation
 **For AUTOMATIC1111 Stable Diffusion WebUI installation, [please read their own Wiki](https://github.com/AUTOMATIC1111/stable-diffusion-webui/wiki/).**
 
