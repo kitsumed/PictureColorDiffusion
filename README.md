@@ -10,7 +10,7 @@ PictureColorDiffusion is a program that automate 2d colorization of drawings / m
 * [ControlNet extension for the Stable Diffusion WebUI](https://github.com/Mikubill/sd-webui-controlnet)
 * A SD / SDXL model related to 2D drawing or anime, preferably trained on danbooru tags, like [AOM3](https://huggingface.co/WarriorMama777/OrangeMixs/blob/main/Models/AbyssOrangeMix3/AOM3_orangemixs.safetensors).
     * This model need to be put into the `models\Stable-Diffusion` directory of the AUTOMATIC1111 Stable Diffusion WebUI.
-* A VAE model if not baked into the model, for SD1.x based model like AOM, [stabilityai mse-840000-ema VAE](https://huggingface.co/stabilityai/sd-vae-ft-mse-original/blob/main/vae-ft-mse-840000-ema-pruned.safetensors) seems to give good results.
+* A VAE model if there isn't one baked into the model, for SD1.x based model like AOM, [stabilityai mse-840000-ema VAE](https://huggingface.co/stabilityai/sd-vae-ft-mse-original/blob/main/vae-ft-mse-840000-ema-pruned.safetensors) seems to give good results.
     * This model need to be put into the `models\VAE` directory of the AUTOMATIC1111 Stable Diffusion WebUI.
 > [!TIP]
 > You can bypass the Stable Diffusion API Endpoint verification in the application with the shortcut `Ctrl+Shift+B`, keep in mind that some issues will arise if you do so. The colorization of images won't work, but you will be able to try your YoloV8 model by right clicking on the inference button. 
