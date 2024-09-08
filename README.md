@@ -20,7 +20,7 @@ To run the application, unzip the `release.zip` file.
 **This is a list of feature implemented directly in PictureColorDiffusion.**
 * Dynamic resizing of image size depending of the selected mode.
 *  #### YoloV8 image segmentation
-    Perform image segmentation on the input picture with a YoloV8 onnx model to keep parts of the original image in the output image.
+    Perform image segmentation on the input picture with a YoloV8 onnx model to keep parts of the original image in the output image. All YoloV8 models must be placed in the `models` directory, located in the same directory as the executable.
     I've created an example model for detecting speech bubbles [available on huggingface](https://huggingface.co/kitsumed/yolov8m_seg-speech-bubble/blob/main/model_dynamic.onnx).
 > [!NOTE]
 > The application does not offer the possibility of targeting specific classes from a YoloV8 model during image segmentation.
