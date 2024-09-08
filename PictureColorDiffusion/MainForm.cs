@@ -35,9 +35,9 @@ namespace PictureColorDiffusion
 		private string? SelectedMode = null;
 
 		/// <summary>
-		/// Hard-coded path of the YoloV8 model for speech bubble detection. Same directory as main executable
+		/// Hard-coded path for the models directory. Same directory as main executable (./models/)
 		/// </summary>
-		private readonly string YoloV8ModelPath = $"{AppDomain.CurrentDomain.BaseDirectory}manga_model.onnx";
+		private readonly string ModelsDirectoryPath = AppDomain.CurrentDomain.BaseDirectory + "models";
 
 		public MainForm()
 		{
@@ -62,6 +62,12 @@ namespace PictureColorDiffusion
 			// Verify if the default ApiEndpoint is valid or invalid at startup
 			SetApplicationState(ApplicationStatesEnum.waiting_for_api);
 			buttonVerifyApiEndpoint.PerformClick();
+			// Ensure that the models directory exist
+			Directory.CreateDirectory(ModelsDirectoryPath);
+			// Set the fileSystemWatcherRefreshONNXModels monitoring to the models directory
+			fileSystemWatcherYoloV8ONNXModels.Path = ModelsDirectoryPath;
+			// Force a refresh of the YoloV8 ONNX model list
+			fileSystemWatcherRefreshONNXModels(null, null);
 		}
 
 		#region Buttons Methods
@@ -332,6 +338,14 @@ namespace PictureColorDiffusion
 		}
 
 		/// <summary>
+		/// Called when the checked value of the "Use YoloV8 segmentation" checkbox is updated.
+		/// </summary>
+		private void checkBoxUseYoloV8_CheckedChanged(object sender, EventArgs e)
+		{
+			comboBoxYoloV8ONNXModels.Enabled = checkBoxUseYoloV8.Checked;
+		}
+
+		/// <summary>
 		/// Called when the user click on the "Interence" button
 		/// </summary>
 		private async void buttonInference_Click(object sender, EventArgs e)
@@ -360,6 +374,8 @@ namespace PictureColorDiffusion
 				TimeSpan startTimeSpan = new TimeSpan(DateTime.Now.Ticks);
 				// Store the YoloV8 segmentation model for the whole inference loop, if null, no model are loaded.
 				YoloV8Predictor? yoloV8Predictor = null;
+				// Store the name of the current yoloV8Predictor
+				string yoloV8CurrentModelName = string.Empty;
 
 				// Send fake progress at 0%
 				InferenceProgress.Report(new InferenceProgressModel()
@@ -424,21 +440,24 @@ namespace PictureColorDiffusion
 					// Store the content of the originalImage that matched the mask of the YoloV8 model
 					Image<Rgba32>? originalImageMaskContent = null;
 					// If YoloV8 segmentation is enabled
-					if (checkBoxUseYoloV8.Checked) 
+					if (checkBoxUseYoloV8.Checked)
 					{
 						InferenceProgress.Report(new InferenceProgressModel()
 						{
 							status = "Interrogating YoloV8 model",
 							completionPercent = completionPercent,
 						});
-						// Load the yoloV8 model if it wasn't loaded before
-						if (yoloV8Predictor == null)
+						// Load the yoloV8 model if it wasn't loaded before OR if the user selectioned a new model during inference
+						if (yoloV8Predictor == null || yoloV8CurrentModelName != comboBoxYoloV8ONNXModels.Text)
 						{
-							yoloV8Predictor = YoloV8Predictor.Create(YoloV8ModelPath);
+							// If a user selectioned a new model, dispose of the previous one
+							yoloV8Predictor?.Dispose();
+							// Load the model
+							yoloV8Predictor = YoloV8Predictor.Create(GetONNXModelPathFromName(comboBoxYoloV8ONNXModels.Text));
 						}
 						// Inference the original image on the model
 						SegmentationResult segResult = await yoloV8Predictor.SegmentAsync(originalImage);
-						
+
 						// Get the mask from the inference segmentation results
 						Image<Rgba32> resultMask;
 						PictureHandler.GetImageMaskFromSegmentationResult(segResult, out resultMask);
@@ -508,7 +527,7 @@ namespace PictureColorDiffusion
 						if (checkBoxIncludeMetadata.Checked)
 						{
 							// If the metadata exist as a png
-							if (isMetadataFound && generatedImageMetadata != null) 
+							if (isMetadataFound && generatedImageMetadata != null)
 							{
 								// Add the "comments" key
 								generatedImageMetadata.TextData.Add(new PngTextData("comments", $"Made with PictureColorDiffusion v{Application.ProductVersion} using mode '{SelectedMode}'.\n" +
@@ -530,7 +549,7 @@ namespace PictureColorDiffusion
 								textDataList.RemoveAll(item => item.Keyword == "parameters");
 							}
 						}
-						
+
 						// Save the picture in the output directory with the same name
 						// We save as PNG as the generated images returned by stable diffusion seems to always have the PNG mime type
 						await generatedImage.SaveAsPngAsync(Path.Combine(textBoxPictureOutputPath.Text, Path.GetFileNameWithoutExtension(filePath) + ".png"), new PngEncoder() { CompressionLevel = PngCompressionLevel.DefaultCompression });
@@ -610,7 +629,7 @@ namespace PictureColorDiffusion
 
 				string[] filesPath = Directory.Exists(textBoxPicturePath.Text) ? PictureHandler.GetSupportedFilesFromDirectory(textBoxPicturePath.Text) : [textBoxPicturePath.Text];
 				// Load the yoloV8 model
-				using YoloV8Predictor predictor = YoloV8Predictor.Create(YoloV8ModelPath);
+				using YoloV8Predictor yoloV8Predictor = YoloV8Predictor.Create(GetONNXModelPathFromName(comboBoxYoloV8ONNXModels.Text));
 
 				int interrogationCompleted = 0;
 				foreach (string filePath in filesPath)
@@ -620,7 +639,7 @@ namespace PictureColorDiffusion
 
 					// Load the picture as a Imagesharp
 					using ImageSharp.Image currentPicture = await PictureHandler.LoadAsImageSharp(filePath);
-					
+
 					// Update progress
 					InferenceProgress.Report(new InferenceProgressModel()
 					{
@@ -629,7 +648,7 @@ namespace PictureColorDiffusion
 						completionPercent = (int)Math.Round((double)interrogationCompleted / filesPath.Length * 100),
 					});
 					// Inference the picture on the model
-					SegmentationResult result = await predictor.SegmentAsync(currentPicture);
+					SegmentationResult result = await yoloV8Predictor.SegmentAsync(currentPicture);
 					// Take the model detections (mask & confidences) and put them on the original image
 					using ImageSharp.Image imageWithResults = await result.PlotImageAsync(currentPicture);
 					// Save the picture as a png with best compression (smaller file size)
@@ -638,7 +657,7 @@ namespace PictureColorDiffusion
 				}
 
 				// Free the ram from the yolov8 model since inference ended
-				predictor?.Dispose();
+				yoloV8Predictor?.Dispose();
 				// Update progress as completed
 				InferenceProgress.Report(new InferenceProgressModel()
 				{
@@ -670,7 +689,7 @@ namespace PictureColorDiffusion
 
 				string[] filesPath = Directory.Exists(textBoxPicturePath.Text) ? PictureHandler.GetSupportedFilesFromDirectory(textBoxPicturePath.Text) : [textBoxPicturePath.Text];
 				// Load the yoloV8 model
-				using YoloV8Predictor predictor = YoloV8Predictor.Create(YoloV8ModelPath);
+				using YoloV8Predictor yoloV8Predictor = YoloV8Predictor.Create(GetONNXModelPathFromName(comboBoxYoloV8ONNXModels.Text));
 
 				int interrogationCompleted = 0;
 				foreach (string filePath in filesPath)
@@ -689,7 +708,7 @@ namespace PictureColorDiffusion
 						completionPercent = (int)Math.Round((double)interrogationCompleted / filesPath.Length * 100),
 					});
 					// Inference the picture on the model
-					SegmentationResult result = await predictor.SegmentAsync(currentPicture);
+					SegmentationResult result = await yoloV8Predictor.SegmentAsync(currentPicture);
 
 					// Get the mask from the inference results
 					Image<Rgba32> resultMask;
@@ -708,7 +727,7 @@ namespace PictureColorDiffusion
 				}
 
 				// Free the ram from the yolov8 model since inference ended
-				predictor?.Dispose();
+				yoloV8Predictor?.Dispose();
 				// Update progress as completed
 				InferenceProgress.Report(new InferenceProgressModel()
 				{
@@ -747,6 +766,17 @@ namespace PictureColorDiffusion
 			}
 		}
 		#endregion
+
+		/// <summary>
+		/// Refresh the YoloV8 ONNX model list of the inference section. Called when files are added, removed or renamed from the models folder.
+		/// </summary>
+		private void fileSystemWatcherRefreshONNXModels(object? sender, FileSystemEventArgs? e)
+		{
+			// Get the path of files inside the directory that fileSystemWatcher watch (only .onnx models)
+			string[] modelsPath = Directory.GetFiles(fileSystemWatcherYoloV8ONNXModels.Path, "*.onnx");
+			comboBoxYoloV8ONNXModels.Items.Clear();
+			comboBoxYoloV8ONNXModels.Items.AddRange(modelsPath.Select(modelPath => Path.GetFileNameWithoutExtension(modelPath)).ToArray());
+		}
 
 		/// <summary>
 		/// This method enable controls and disable controls depending of the application state
@@ -808,6 +838,19 @@ namespace PictureColorDiffusion
 				return false;
 
 			return true;
+		}
+
+		/// <summary>
+		/// Get the full path of the onnx model by it's name
+		/// </summary>
+		/// <param name="name">The name of the onnx model, without the extension</param>
+		/// <returns>The full path of the onnx model</returns>
+		/// <exception cref="FileNotFoundException"></exception>
+		private string GetONNXModelPathFromName(string name)
+		{
+			string modelPath = $"{ModelsDirectoryPath}/{name}.onnx";
+			if (File.Exists(modelPath)) return modelPath;
+			throw new FileNotFoundException($"Could not find the onnx model under '{modelPath}'");
 		}
 
 		/// <summary>

@@ -65,6 +65,9 @@
 			buttonRefreshModels = new Button();
 			labelModel = new Label();
 			groupBoxInference = new GroupBox();
+			labelYoloV8ONNXModel = new Label();
+			comboBoxYoloV8ONNXModels = new ComboBox();
+			checkBoxUseYoloV8 = new CheckBox();
 			checkBoxIncludeMetadata = new CheckBox();
 			labelSampler = new Label();
 			comboBoxSampler = new ComboBox();
@@ -87,7 +90,7 @@
 			InferenceYoloV8DetectionsToolStripMenuItem = new ToolStripMenuItem();
 			InferenceYoloV8MaskDifferenceToolStripMenuItem = new ToolStripMenuItem();
 			toolTip1 = new ToolTip(components);
-			checkBoxUseYoloV8 = new CheckBox();
+			fileSystemWatcherYoloV8ONNXModels = new FileSystemWatcher();
 			groupBoxStableDiffusionAPIConfig.SuspendLayout();
 			groupBoxPictureColorDiffusionConfig.SuspendLayout();
 			groupBoxControlnetConfiguration.SuspendLayout();
@@ -97,6 +100,7 @@
 			((System.ComponentModel.ISupportInitialize)numericUpDownSeed).BeginInit();
 			((System.ComponentModel.ISupportInitialize)pictureBoxPreview).BeginInit();
 			contextMenuStripButtonInference.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)fileSystemWatcherYoloV8ONNXModels).BeginInit();
 			SuspendLayout();
 			// 
 			// labelPicturePath
@@ -479,6 +483,8 @@
 			// 
 			// groupBoxInference
 			// 
+			groupBoxInference.Controls.Add(labelYoloV8ONNXModel);
+			groupBoxInference.Controls.Add(comboBoxYoloV8ONNXModels);
 			groupBoxInference.Controls.Add(checkBoxUseYoloV8);
 			groupBoxInference.Controls.Add(checkBoxIncludeMetadata);
 			groupBoxInference.Controls.Add(labelSampler);
@@ -504,6 +510,41 @@
 			groupBoxInference.TabIndex = 105;
 			groupBoxInference.TabStop = false;
 			groupBoxInference.Text = "Inference";
+			// 
+			// labelYoloV8ONNXModel
+			// 
+			labelYoloV8ONNXModel.AutoSize = true;
+			labelYoloV8ONNXModel.ForeColor = Color.WhiteSmoke;
+			labelYoloV8ONNXModel.Location = new Point(11, 227);
+			labelYoloV8ONNXModel.Name = "labelYoloV8ONNXModel";
+			labelYoloV8ONNXModel.Size = new Size(160, 17);
+			labelYoloV8ONNXModel.TabIndex = 118;
+			labelYoloV8ONNXModel.Text = "YoloV8 ONNX Model :";
+			// 
+			// comboBoxYoloV8ONNXModels
+			// 
+			comboBoxYoloV8ONNXModels.DropDownStyle = ComboBoxStyle.DropDownList;
+			comboBoxYoloV8ONNXModels.FormattingEnabled = true;
+			comboBoxYoloV8ONNXModels.Location = new Point(177, 224);
+			comboBoxYoloV8ONNXModels.Name = "comboBoxYoloV8ONNXModels";
+			comboBoxYoloV8ONNXModels.Size = new Size(191, 25);
+			comboBoxYoloV8ONNXModels.TabIndex = 117;
+			toolTip1.SetToolTip(comboBoxYoloV8ONNXModels, "Select the YoloV8 ONNX model to use for the segmentation.\r\nPut your models into the models directory of PictureColorDiffusion.");
+			// 
+			// checkBoxUseYoloV8
+			// 
+			checkBoxUseYoloV8.AutoSize = true;
+			checkBoxUseYoloV8.Checked = true;
+			checkBoxUseYoloV8.CheckState = CheckState.Checked;
+			checkBoxUseYoloV8.ForeColor = Color.WhiteSmoke;
+			checkBoxUseYoloV8.Location = new Point(11, 131);
+			checkBoxUseYoloV8.Name = "checkBoxUseYoloV8";
+			checkBoxUseYoloV8.Size = new Size(211, 21);
+			checkBoxUseYoloV8.TabIndex = 116;
+			checkBoxUseYoloV8.Text = "Use YoloV8 segmentation";
+			toolTip1.SetToolTip(checkBoxUseYoloV8, "Inference the original picture with a YoloV8 segmentation model\r\nto copy the matching parts of the original image on top of the\r\ngenerated image (colored).");
+			checkBoxUseYoloV8.UseVisualStyleBackColor = true;
+			checkBoxUseYoloV8.CheckedChanged += checkBoxUseYoloV8_CheckedChanged;
 			// 
 			// checkBoxIncludeMetadata
 			// 
@@ -734,19 +775,16 @@
 			toolTip1.ToolTipIcon = ToolTipIcon.Info;
 			toolTip1.ToolTipTitle = "Info";
 			// 
-			// checkBoxUseYoloV8
+			// fileSystemWatcherYoloV8ONNXModels
 			// 
-			checkBoxUseYoloV8.AutoSize = true;
-			checkBoxUseYoloV8.Checked = true;
-			checkBoxUseYoloV8.CheckState = CheckState.Checked;
-			checkBoxUseYoloV8.ForeColor = Color.WhiteSmoke;
-			checkBoxUseYoloV8.Location = new Point(11, 131);
-			checkBoxUseYoloV8.Name = "checkBoxUseYoloV8";
-			checkBoxUseYoloV8.Size = new Size(211, 21);
-			checkBoxUseYoloV8.TabIndex = 116;
-			checkBoxUseYoloV8.Text = "Use YoloV8 segmentation";
-			toolTip1.SetToolTip(checkBoxUseYoloV8, "Inference the original picture with a YoloV8 segmentation model\r\nto copy the matching parts of the original image on top of the\r\ngenerated image (colored).");
-			checkBoxUseYoloV8.UseVisualStyleBackColor = true;
+			fileSystemWatcherYoloV8ONNXModels.EnableRaisingEvents = true;
+			fileSystemWatcherYoloV8ONNXModels.Filter = "*.onnx";
+			fileSystemWatcherYoloV8ONNXModels.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastAccess;
+			fileSystemWatcherYoloV8ONNXModels.SynchronizingObject = this;
+			fileSystemWatcherYoloV8ONNXModels.Changed += fileSystemWatcherRefreshONNXModels;
+			fileSystemWatcherYoloV8ONNXModels.Created += fileSystemWatcherRefreshONNXModels;
+			fileSystemWatcherYoloV8ONNXModels.Deleted += fileSystemWatcherRefreshONNXModels;
+			fileSystemWatcherYoloV8ONNXModels.Renamed += fileSystemWatcherRefreshONNXModels;
 			// 
 			// MainForm
 			// 
@@ -778,6 +816,7 @@
 			((System.ComponentModel.ISupportInitialize)numericUpDownSeed).EndInit();
 			((System.ComponentModel.ISupportInitialize)pictureBoxPreview).EndInit();
 			contextMenuStripButtonInference.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)fileSystemWatcherYoloV8ONNXModels).EndInit();
 			ResumeLayout(false);
 		}
 
@@ -842,5 +881,8 @@
 		private ToolStripMenuItem InferenceYoloV8DetectionsToolStripMenuItem;
 		private ToolStripMenuItem InferenceYoloV8MaskDifferenceToolStripMenuItem;
 		private CheckBox checkBoxUseYoloV8;
+		private Label labelYoloV8ONNXModel;
+		private ComboBox comboBoxYoloV8ONNXModels;
+		private FileSystemWatcher fileSystemWatcherYoloV8ONNXModels;
 	}
 }
