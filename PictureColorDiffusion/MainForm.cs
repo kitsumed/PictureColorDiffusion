@@ -350,18 +350,37 @@ namespace PictureColorDiffusion
 		/// </summary>
 		private async void buttonInference_Click(object sender, EventArgs e)
 		{
-			// Verify if every required fields on the UI have been fileld
-			if (!CanInferenceStart())
+			// Verify if required fields on the UI have been filed
+			if (string.IsNullOrEmpty(textBoxPicturePath.Text) || string.IsNullOrEmpty(textBoxPictureOutputPath.Text))
 			{
-				MessageBox.Show("Some required fields have not been filled.", "Inference", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-				return; // stop execution
+				MessageBox.Show("Please select a valid input & output path.", "Inference", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				return; // stop method execution
+			}
+			if (SelectedMode == null) 
+			{
+				MessageBox.Show("Please select a Picture Color Diffusion mode.", "Inference", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				return; // stop method execution
+			}
+			if (checkBoxUseYoloV8.Checked && comboBoxYoloV8ONNXModels.SelectedIndex == -1) 
+			{
+				MessageBox.Show("Please select a YoloV8 ONNX model or disable YoloV8 segmentation.", "Inference", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				return; // stop method execution
 			}
 
 			// If the picture path is a directory, add the path of all file into the array, else (picture path is a file), only add one path to the array
 			string[] filesPath = Directory.Exists(textBoxPicturePath.Text) ? PictureHandler.GetSupportedFilesFromDirectory(textBoxPicturePath.Text) : [textBoxPicturePath.Text];
+			// Load selected mode configuration
 			PictureColorDiffusionModeModel? currentModeConfiguration = PictureColorDiffusionModes.GetModeConfiguration(SelectedMode);
+
 			if (currentModeConfiguration != null)
 			{
+				// Verify if required controlnet fields match the selected mode requirements
+				if (comboBoxUnit1ControlNetModel.SelectedIndex == -1 || comboBoxUnit2ControlNetModel.SelectedIndex == -1 && currentModeConfiguration.controlNetUnits.Length >= 2)
+				{
+					MessageBox.Show("Please select a controlnet model for all UNIT fields required by your current mode.", "Inference", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					return; // stop method execution
+				}
+
 				// Update application state to inference mode
 				SetApplicationState(ApplicationStatesEnum.currently_in_inference);
 				// Create cancellation token for the inference
@@ -619,8 +638,8 @@ namespace PictureColorDiffusion
 		/// </summary>
 		private async void InferenceYoloV8DetectionsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			// Verify that a input & output path was set
-			if (!string.IsNullOrEmpty(textBoxPicturePath.Text) && !string.IsNullOrEmpty(textBoxPictureOutputPath.Text))
+			// Verify that a input & output path was set along with a YoloV8 onnx model
+			if (!string.IsNullOrEmpty(textBoxPicturePath.Text) && !string.IsNullOrEmpty(textBoxPictureOutputPath.Text) && comboBoxYoloV8ONNXModels.SelectedIndex == -1)
 			{
 				// Create cancellation token for the inference
 				InferenceCancellationTokenSource = new CancellationTokenSource();
@@ -669,7 +688,7 @@ namespace PictureColorDiffusion
 			}
 			else
 			{
-				MessageBox.Show("Please select a valid input & output path first.", "Inference YoloV8 Detections", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				MessageBox.Show("Please select a valid input & output path & YoloV8 ONNX model.", "Inference YoloV8 Detections", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			}
 		}
 
@@ -679,8 +698,8 @@ namespace PictureColorDiffusion
 		/// </summary>
 		private async void InferenceYoloV8MaskDifferenceToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			// Verify that a input & output path was set
-			if (!string.IsNullOrEmpty(textBoxPicturePath.Text) && !string.IsNullOrEmpty(textBoxPictureOutputPath.Text))
+			// Verify that a input & output path was set along with a YoloV8 onnx model
+			if (!string.IsNullOrEmpty(textBoxPicturePath.Text) && !string.IsNullOrEmpty(textBoxPictureOutputPath.Text) && comboBoxYoloV8ONNXModels.SelectedIndex == -1)
 			{
 				// Create cancellation token for the inference
 				InferenceCancellationTokenSource = new CancellationTokenSource();
@@ -739,7 +758,7 @@ namespace PictureColorDiffusion
 			}
 			else
 			{
-				MessageBox.Show("Please select a valid input & output path first.", "Inference YoloV8 Mask Difference", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				MessageBox.Show("Please select a valid input & output path & YoloV8 ONNX model.", "Inference YoloV8 Mask Difference", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			}
 		}
 
@@ -820,24 +839,6 @@ namespace PictureColorDiffusion
 					buttonStopInference.Enabled = true;
 					break;
 			}
-
-		}
-
-		/// <summary>
-		/// Verify application values to verify that all conditions are met before allowing a inference
-		/// </summary>
-		/// <returns>True if all conditions are met, else false</returns>
-		private bool CanInferenceStart()
-		{
-			// Verify picture color diffusion configuration
-			if (string.IsNullOrEmpty(textBoxPicturePath.Text) || string.IsNullOrEmpty(textBoxPictureOutputPath.Text)) // missing input / output
-				return false;
-			if (SelectedMode == null) // No mode selected
-				return false;
-			if (comboBoxUnit1ControlNetModel.SelectedIndex == -1 || comboBoxUnit2ControlNetModel.SelectedIndex == -1) // No model selected
-				return false;
-
-			return true;
 		}
 
 		/// <summary>
