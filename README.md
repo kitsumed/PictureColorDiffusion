@@ -20,7 +20,22 @@ To run the application, unzip the `release.zip` file.
 **This is a list of feature implemented directly in PictureColorDiffusion.**
 * Dynamic resizing of image size depending of the selected mode.
 *  #### YoloV8 image segmentation
-    Perform image segmentation on the input picture with a YoloV8 onnx model to keep parts of the original image in the output image. All YoloV8 models must be placed in the `models` directory, located in the same directory as the executable.
+    Perform image segmentation on the input picture with a YoloV8 onnx model to keep parts of the original image in the output image.
     I've created an example model for detecting speech bubbles [available on huggingface](https://huggingface.co/kitsumed/yolov8m_seg-speech-bubble/blob/main/model_dynamic.onnx).
 > [!NOTE]
 > The application does not offer the possibility of targeting specific classes from a YoloV8 model during image segmentation.
+
+## FAQ / Questions
+### Where to store YoloV8 models?
+All YoloV8 models must be placed in the `models` directory, located in the same directory as the executable.
+Only `onnx` model are supported.
+### What SD / SDXL model to use in the webui?
+I tried to make every modes of the application have somewhat good results with popular 2d/anime related models from [huggingface](https://huggingface.co/) and [civitai](https://civitai.com/). In the end, I realised that the results seems to depends of the following:
+* Has the SD / SDXL model been trained on colored images resembling your grayscale image & prompt?
+    * Example: A grayscale comic with manga mode, but the model does not know manga related words well enough.
+* Did the PictureColorDiffusion mode you selectioned matches your grayscale image?
+    * Example: Manga mode for a drawing could cause poor results and turn the drawing into a manga like image.
+
+There are some work arounds, you could train a Lora with colored images of what you want specifically for your model, then use the Lora using into the additional prompt section of the application (Format: `<lora:LORA_NAME_HERE:WEIGHT_HERE>`). 
+You can also use the additional prompt & negative prompt section to add informations on what you are trying to colorize. 
+Keeping the `Use interrogation` feature can also help, as it's automatically adding additional information on what you are trying to colorize.
