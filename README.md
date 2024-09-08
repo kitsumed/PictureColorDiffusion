@@ -36,6 +36,6 @@ I tried to make every modes of the application have somewhat good results with p
 * Did the PictureColorDiffusion mode you selectioned matches your grayscale image?
     * Example: Manga mode for a drawing could cause poor results and turn the drawing into a manga like image.
 
-There are some work arounds, you could train a Lora with colored images of what you want specifically for your model, then use the Lora using into the additional prompt section of the application (Format: `<lora:LORA_NAME_HERE:WEIGHT_HERE>`). 
+There are some work arounds, you could train a Lora with colored images of what you want specifically for your model, then use the Lora using the additional prompt section of the application (Format: `<lora:LORA_NAME_HERE:WEIGHT_HERE>`). 
 You can also use the additional prompt & negative prompt section to add informations on what you are trying to colorize. 
-Keeping the `Use interrogation` feature can also help, as it's automatically adding additional information on what you are trying to colorize.
+Keeping the `Use interrogation` feature enabled can also help, as it's automatically adding additional information on what you are trying to colorize.
