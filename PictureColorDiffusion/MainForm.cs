@@ -70,6 +70,18 @@ namespace PictureColorDiffusion
 			fileSystemWatcherRefreshONNXModels(null, null);
 		}
 
+		/// <summary>
+		/// Method executed when a keyboard key is pressed down on the MainForm
+		/// </summary>
+		private void MainForm_KeyDown(object sender, KeyEventArgs e)
+		{
+			// Ctrl+Shift+B shortcut to bypass API verification
+			if (e.Control && e.Shift && e.KeyCode == Keys.B)
+			{
+				SetApplicationState(ApplicationStatesEnum.waiting_for_inference);
+			}
+		}
+
 		#region Buttons Methods
 		// == Stable Diffusion API Configuration ==
 
@@ -356,12 +368,12 @@ namespace PictureColorDiffusion
 				MessageBox.Show("Please select a valid input & output path.", "Inference", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				return; // stop method execution
 			}
-			if (SelectedMode == null) 
+			if (SelectedMode == null)
 			{
 				MessageBox.Show("Please select a Picture Color Diffusion mode.", "Inference", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				return; // stop method execution
 			}
-			if (checkBoxUseYoloV8.Checked && comboBoxYoloV8ONNXModels.SelectedIndex == -1) 
+			if (checkBoxUseYoloV8.Checked && comboBoxYoloV8ONNXModels.SelectedIndex == -1)
 			{
 				MessageBox.Show("Please select a YoloV8 ONNX model or disable YoloV8 segmentation.", "Inference", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				return; // stop method execution

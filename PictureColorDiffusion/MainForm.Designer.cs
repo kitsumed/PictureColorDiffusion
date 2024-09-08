@@ -798,11 +798,13 @@
 			Controls.Add(groupBoxPictureColorDiffusionConfig);
 			Controls.Add(groupBoxStableDiffusionAPIConfig);
 			Font = new Font("Cascadia Mono", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+			KeyPreview = true;
 			MaximizeBox = false;
 			Name = "MainForm";
 			StartPosition = FormStartPosition.CenterScreen;
 			Text = "Picture Color Diffusion";
 			Load += MainForm_Load;
+			KeyDown += MainForm_KeyDown;
 			groupBoxStableDiffusionAPIConfig.ResumeLayout(false);
 			groupBoxStableDiffusionAPIConfig.PerformLayout();
 			groupBoxPictureColorDiffusionConfig.ResumeLayout(false);
