@@ -69,6 +69,17 @@
 		// Disable masks
 		public bool mask { get => false; }
 
+		/// <summary>
+		/// Low Threshold
+		/// </summary>
+		public double threshold_a { get; set; } = -1;
+
+		/// <summary>
+		/// High Threshold
+		/// </summary>
+		/// 
+		public double threshold_b { get; set; } = -1;
+
 
 	}
 

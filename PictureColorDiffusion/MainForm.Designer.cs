@@ -40,6 +40,7 @@
 			labelApiEndpoint = new Label();
 			textBoxApiEndpoint = new TextBox();
 			groupBoxPictureColorDiffusionConfig = new GroupBox();
+			radioButtonModeMangaPony = new RadioButton();
 			buttonClearReference = new Button();
 			labelReferencePicturePath = new Label();
 			textBoxReferencePicturePath = new TextBox();
@@ -195,6 +196,7 @@
 			// 
 			// groupBoxPictureColorDiffusionConfig
 			// 
+			groupBoxPictureColorDiffusionConfig.Controls.Add(radioButtonModeMangaPony);
 			groupBoxPictureColorDiffusionConfig.Controls.Add(buttonClearReference);
 			groupBoxPictureColorDiffusionConfig.Controls.Add(labelReferencePicturePath);
 			groupBoxPictureColorDiffusionConfig.Controls.Add(textBoxReferencePicturePath);
@@ -216,6 +218,18 @@
 			groupBoxPictureColorDiffusionConfig.TabIndex = 0;
 			groupBoxPictureColorDiffusionConfig.TabStop = false;
 			groupBoxPictureColorDiffusionConfig.Text = "Picture Color Diffusion Configuration";
+			// 
+			// radioButtonModeMangaPony
+			// 
+			radioButtonModeMangaPony.AutoSize = true;
+			radioButtonModeMangaPony.Location = new Point(156, 124);
+			radioButtonModeMangaPony.Name = "radioButtonModeMangaPony";
+			radioButtonModeMangaPony.Size = new Size(82, 21);
+			radioButtonModeMangaPony.TabIndex = 112;
+			radioButtonModeMangaPony.Text = "MangaXL";
+			toolTip1.SetToolTip(radioButtonModeMangaPony, "Manga mode for SDXL models using danbooru prompt style.");
+			radioButtonModeMangaPony.UseVisualStyleBackColor = true;
+			radioButtonModeMangaPony.CheckedChanged += radioButtonSelectMode_CheckedChanged;
 			// 
 			// buttonClearReference
 			// 
@@ -336,9 +350,10 @@
 			radioButtonModeManga.AutoSize = true;
 			radioButtonModeManga.Location = new Point(73, 124);
 			radioButtonModeManga.Name = "radioButtonModeManga";
-			radioButtonModeManga.Size = new Size(66, 21);
+			radioButtonModeManga.Size = new Size(82, 21);
 			radioButtonModeManga.TabIndex = 106;
-			radioButtonModeManga.Text = "Manga";
+			radioButtonModeManga.Text = "MangaSD";
+			toolTip1.SetToolTip(radioButtonModeManga, "Manga mode for SD models using danbooru prompt style.");
 			radioButtonModeManga.UseVisualStyleBackColor = true;
 			radioButtonModeManga.CheckedChanged += radioButtonSelectMode_CheckedChanged;
 			// 
@@ -914,5 +929,6 @@
 		private FileSystemWatcher fileSystemWatcherYoloV8ONNXModels;
 		private Label labelOutputFormat;
 		private ComboBox comboBoxOutputFormat;
+		private RadioButton radioButtonModeMangaPony;
 	}
 }

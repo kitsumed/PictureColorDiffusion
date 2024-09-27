@@ -684,7 +684,7 @@ namespace PictureColorDiffusion
 		private async void InferenceYoloV8DetectionsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			// Verify that a input & output path was set along with a YoloV8 onnx model
-			if (!string.IsNullOrEmpty(textBoxPicturePath.Text) && !string.IsNullOrEmpty(textBoxPictureOutputPath.Text) && comboBoxYoloV8ONNXModels.SelectedIndex == -1)
+			if (!string.IsNullOrEmpty(textBoxPicturePath.Text) && !string.IsNullOrEmpty(textBoxPictureOutputPath.Text) && comboBoxYoloV8ONNXModels.SelectedIndex != -1)
 			{
 				// Create cancellation token for the inference
 				InferenceCancellationTokenSource = new CancellationTokenSource();
@@ -744,7 +744,7 @@ namespace PictureColorDiffusion
 		private async void InferenceYoloV8MaskDifferenceToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			// Verify that a input & output path was set along with a YoloV8 onnx model
-			if (!string.IsNullOrEmpty(textBoxPicturePath.Text) && !string.IsNullOrEmpty(textBoxPictureOutputPath.Text) && comboBoxYoloV8ONNXModels.SelectedIndex == -1)
+			if (!string.IsNullOrEmpty(textBoxPicturePath.Text) && !string.IsNullOrEmpty(textBoxPictureOutputPath.Text) && comboBoxYoloV8ONNXModels.SelectedIndex != -1)
 			{
 				// Create cancellation token for the inference
 				InferenceCancellationTokenSource = new CancellationTokenSource();
