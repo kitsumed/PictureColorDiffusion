@@ -67,38 +67,38 @@ namespace PictureColorDiffusion.Utilities
 			{
 				"MangaXL", new PictureColorDiffusionModeModel()
 				{
-					prompt = "detailed (official style|style parody), (comic|cover|manga|5koma|4koma|3koma):1.1, masterpiece, highres, blank speech bubble, simple background, textless version, emphasis lines, ",
-					negative_prompt = "(greyscale:1.1), monochrome, deformed, jpeg artifacts, lineart, sepia, low quality, lowres, worst quality, brown theme, grey theme, light brown background, bad anatomy, high contrast, bad, screentones, neon palette, color issue, purple theme, black theme, [blue theme|orange theme]:0.5, ",
-					// Japanese JB5 paper size (in pixels) divided by 2 (taken from papersizes.io)
-					dynamicResizeMax = new ImageSharp.Size(1075 ,1518),
+					prompt = "detailed (official style|animification), colored (comic|manga|4koma|3koma), masterpiece, absurdres, highres, textless version, very aesthetic, ",
+					negative_prompt = "greyscale, monochrome, deformed, jpeg artifacts, lineart, sepia, partially colored, low quality, lowres, worst quality, lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, signature, watermark, username, blurry, artist name, normal quality, high contrast, screentones, neon palette, color issue, ",
+					// Japanese JB4 paper size (in pixels) divided by 2.5 (taken from papersizes.io)
+					dynamicResizeMax = new ImageSharp.Size(1214, 1720),
 					interogateModel = "deepdanbooru",
-					controlNetModelNamePerUnit = ["bdsqlsz_controlllite_xl_tile_anime_alpha", "bdsqlsz_controlllite_xl_canny"],
+					controlNetModelNamePerUnit = ["bdsqlsz_controlllite_xl_lineart_anime_denoise", "bdsqlsz_controlllite_xl_depth_V2"],
 					controlNetUnits = [
 					// UNIT 1 CONFIG
 					new StableDiffusionExtensionControlNetArg()
 					{
-						module = "tile_resample",
-						weight = 0.35,
+						module = "lineart_standard (from white bg & black line)",
+						weight = 0.8,
 						guidance_start = 0,
 						guidance_end = 1,
 						control_mode = "Balanced",
 						resize_mode = "Just Resize",
 						pixel_perfect = true,
-						threshold_a = 1,
+						threshold_a = 0.5,
 						threshold_b = 0.5,
 					},
 					// UNIT 2 CONFIG
 					new StableDiffusionExtensionControlNetArg()
 					{
-						module = "canny",
-						weight = 0.75,
+						module = "depth_anything_v2",
+						weight = 0.6,
 						guidance_start = 0,
-						guidance_end = 0.8,
+						guidance_end = 0.45,
 						control_mode = "Balanced",
 						resize_mode = "Just Resize",
 						pixel_perfect = true,
-						threshold_a = 180,
-						threshold_b = 200,
+						threshold_a = 0.5,
+						threshold_b = 0.5,
 					}]
 				}
 			}

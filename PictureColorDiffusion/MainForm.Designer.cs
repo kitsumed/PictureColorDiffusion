@@ -40,7 +40,7 @@
 			labelApiEndpoint = new Label();
 			textBoxApiEndpoint = new TextBox();
 			groupBoxPictureColorDiffusionConfig = new GroupBox();
-			radioButtonModeMangaPony = new RadioButton();
+			radioButtonModeMangaXL = new RadioButton();
 			buttonClearReference = new Button();
 			labelReferencePicturePath = new Label();
 			textBoxReferencePicturePath = new TextBox();
@@ -51,7 +51,7 @@
 			comboBoxUnit1ControlNetModel = new ComboBox();
 			labelUnit2ControlNetModel = new Label();
 			labelUnit1ControlNetModel = new Label();
-			radioButtonModeManga = new RadioButton();
+			radioButtonModeMangaSD = new RadioButton();
 			labelMode = new Label();
 			labelPictureOutputPath = new Label();
 			textBoxPictureOutputPath = new TextBox();
@@ -196,13 +196,13 @@
 			// 
 			// groupBoxPictureColorDiffusionConfig
 			// 
-			groupBoxPictureColorDiffusionConfig.Controls.Add(radioButtonModeMangaPony);
+			groupBoxPictureColorDiffusionConfig.Controls.Add(radioButtonModeMangaXL);
 			groupBoxPictureColorDiffusionConfig.Controls.Add(buttonClearReference);
 			groupBoxPictureColorDiffusionConfig.Controls.Add(labelReferencePicturePath);
 			groupBoxPictureColorDiffusionConfig.Controls.Add(textBoxReferencePicturePath);
 			groupBoxPictureColorDiffusionConfig.Controls.Add(buttonSelectReference);
 			groupBoxPictureColorDiffusionConfig.Controls.Add(groupBoxControlnetConfiguration);
-			groupBoxPictureColorDiffusionConfig.Controls.Add(radioButtonModeManga);
+			groupBoxPictureColorDiffusionConfig.Controls.Add(radioButtonModeMangaSD);
 			groupBoxPictureColorDiffusionConfig.Controls.Add(labelMode);
 			groupBoxPictureColorDiffusionConfig.Controls.Add(labelPictureOutputPath);
 			groupBoxPictureColorDiffusionConfig.Controls.Add(textBoxPictureOutputPath);
@@ -219,17 +219,17 @@
 			groupBoxPictureColorDiffusionConfig.TabStop = false;
 			groupBoxPictureColorDiffusionConfig.Text = "Picture Color Diffusion Configuration";
 			// 
-			// radioButtonModeMangaPony
+			// radioButtonModeMangaXL
 			// 
-			radioButtonModeMangaPony.AutoSize = true;
-			radioButtonModeMangaPony.Location = new Point(156, 124);
-			radioButtonModeMangaPony.Name = "radioButtonModeMangaPony";
-			radioButtonModeMangaPony.Size = new Size(82, 21);
-			radioButtonModeMangaPony.TabIndex = 112;
-			radioButtonModeMangaPony.Text = "MangaXL";
-			toolTip1.SetToolTip(radioButtonModeMangaPony, "Manga mode for SDXL models using danbooru prompt style.");
-			radioButtonModeMangaPony.UseVisualStyleBackColor = true;
-			radioButtonModeMangaPony.CheckedChanged += radioButtonSelectMode_CheckedChanged;
+			radioButtonModeMangaXL.AutoSize = true;
+			radioButtonModeMangaXL.Location = new Point(156, 124);
+			radioButtonModeMangaXL.Name = "radioButtonModeMangaXL";
+			radioButtonModeMangaXL.Size = new Size(82, 21);
+			radioButtonModeMangaXL.TabIndex = 112;
+			radioButtonModeMangaXL.Text = "MangaXL";
+			toolTip1.SetToolTip(radioButtonModeMangaXL, "Manga mode for SDXL models using danbooru prompt style.");
+			radioButtonModeMangaXL.UseVisualStyleBackColor = true;
+			radioButtonModeMangaXL.CheckedChanged += radioButtonSelectMode_CheckedChanged;
 			// 
 			// buttonClearReference
 			// 
@@ -345,17 +345,17 @@
 			labelUnit1ControlNetModel.Tag = "1";
 			labelUnit1ControlNetModel.Text = "UNIT 1 Controlnet model for 'N/A' :";
 			// 
-			// radioButtonModeManga
+			// radioButtonModeMangaSD
 			// 
-			radioButtonModeManga.AutoSize = true;
-			radioButtonModeManga.Location = new Point(73, 124);
-			radioButtonModeManga.Name = "radioButtonModeManga";
-			radioButtonModeManga.Size = new Size(82, 21);
-			radioButtonModeManga.TabIndex = 106;
-			radioButtonModeManga.Text = "MangaSD";
-			toolTip1.SetToolTip(radioButtonModeManga, "Manga mode for SD models using danbooru prompt style.");
-			radioButtonModeManga.UseVisualStyleBackColor = true;
-			radioButtonModeManga.CheckedChanged += radioButtonSelectMode_CheckedChanged;
+			radioButtonModeMangaSD.AutoSize = true;
+			radioButtonModeMangaSD.Location = new Point(73, 124);
+			radioButtonModeMangaSD.Name = "radioButtonModeMangaSD";
+			radioButtonModeMangaSD.Size = new Size(82, 21);
+			radioButtonModeMangaSD.TabIndex = 106;
+			radioButtonModeMangaSD.Text = "MangaSD";
+			toolTip1.SetToolTip(radioButtonModeMangaSD, "Manga mode for SD models using danbooru prompt style.");
+			radioButtonModeMangaSD.UseVisualStyleBackColor = true;
+			radioButtonModeMangaSD.CheckedChanged += radioButtonSelectMode_CheckedChanged;
 			// 
 			// labelMode
 			// 
@@ -897,7 +897,7 @@
 		private Button buttonApplyChanges;
 		private CheckBox checkBoxControlNetLowvram;
 		private Label labelMode;
-		private RadioButton radioButtonModeManga;
+		private RadioButton radioButtonModeMangaSD;
 		private GroupBox groupBoxControlnetConfiguration;
 		private ComboBox comboBoxUnit2ControlNetModel;
 		private ComboBox comboBoxUnit1ControlNetModel;
@@ -929,6 +929,6 @@
 		private FileSystemWatcher fileSystemWatcherYoloV8ONNXModels;
 		private Label labelOutputFormat;
 		private ComboBox comboBoxOutputFormat;
-		private RadioButton radioButtonModeMangaPony;
+		private RadioButton radioButtonModeMangaXL;
 	}
 }

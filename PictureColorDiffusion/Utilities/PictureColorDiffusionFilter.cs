@@ -36,7 +36,7 @@
 			"username", "cropped", "web address", "scan artifacts", "bar censor", "censored",
 			"thought bubble", "mosaic censoring", "oversaturated", "circle name", "artist name", "copyright name",
 			"company name", "character name", "blur censor", "pointless censoring", "transparent censoring", "crease",
-			"jpeg artifacts", "screentones",
+			"jpeg artifacts", "screentones", "speech bubble",
 			// Text
 			"chinese text", "bopomofo text", "cantonese text", "minnan text", "shenyang mandarin text", "sichuanese text",
 			"traditional chinese text", "pinyin text", "archaic japanese text", "furigana", "romaji text", "kiriji text",
