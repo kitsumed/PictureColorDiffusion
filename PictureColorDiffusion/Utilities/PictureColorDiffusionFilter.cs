@@ -27,10 +27,10 @@
 		private static readonly string[] BadWords =
 		{
 			// Colors
-			"greyscale","monochrome", "partially colored", "muted color", "brown theme", "white theme",
-			"grey theme", "spot color", "scan", "sepia", "negative", "white skin",
-			"purple theme", "blue theme", "red theme", "color issue", "neon palette", "black theme",
-			"orange theme", "light brown background", "high contrast",
+			"greyscale", "monochrome", "partially colored", "muted color", "brown theme", "grey theme",
+			"spot color", "scan", "sepia", "negative", "purple theme", "blue theme",
+			"red theme", "color issue", "neon palette", "black theme", "orange theme", "light brown background",
+			 "high contrast", "white",
 			// Quality
 			"low quality", "lowres", "worst quality", "deformed", "signature", "watermark",
 			"username", "cropped", "web address", "scan artifacts", "bar censor", "censored",

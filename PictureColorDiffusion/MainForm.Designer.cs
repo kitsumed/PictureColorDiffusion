@@ -65,7 +65,9 @@
 			buttonRefreshModels = new Button();
 			labelModel = new Label();
 			groupBoxInference = new GroupBox();
+			labelOutputFormat = new Label();
 			labelYoloV8ONNXModel = new Label();
+			comboBoxOutputFormat = new ComboBox();
 			comboBoxYoloV8ONNXModels = new ComboBox();
 			checkBoxUseYoloV8 = new CheckBox();
 			checkBoxIncludeMetadata = new CheckBox();
@@ -483,7 +485,9 @@
 			// 
 			// groupBoxInference
 			// 
+			groupBoxInference.Controls.Add(labelOutputFormat);
 			groupBoxInference.Controls.Add(labelYoloV8ONNXModel);
+			groupBoxInference.Controls.Add(comboBoxOutputFormat);
 			groupBoxInference.Controls.Add(comboBoxYoloV8ONNXModels);
 			groupBoxInference.Controls.Add(checkBoxUseYoloV8);
 			groupBoxInference.Controls.Add(checkBoxIncludeMetadata);
@@ -506,26 +510,48 @@
 			groupBoxInference.Font = new Font("Cascadia Mono", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
 			groupBoxInference.Location = new Point(12, 409);
 			groupBoxInference.Name = "groupBoxInference";
-			groupBoxInference.Size = new Size(890, 315);
+			groupBoxInference.Size = new Size(890, 335);
 			groupBoxInference.TabIndex = 105;
 			groupBoxInference.TabStop = false;
 			groupBoxInference.Text = "Inference";
+			// 
+			// labelOutputFormat
+			// 
+			labelOutputFormat.AutoSize = true;
+			labelOutputFormat.ForeColor = Color.WhiteSmoke;
+			labelOutputFormat.Location = new Point(11, 250);
+			labelOutputFormat.Name = "labelOutputFormat";
+			labelOutputFormat.Size = new Size(128, 17);
+			labelOutputFormat.TabIndex = 120;
+			labelOutputFormat.Text = "Output Format :";
 			// 
 			// labelYoloV8ONNXModel
 			// 
 			labelYoloV8ONNXModel.AutoSize = true;
 			labelYoloV8ONNXModel.ForeColor = Color.WhiteSmoke;
-			labelYoloV8ONNXModel.Location = new Point(11, 227);
+			labelYoloV8ONNXModel.Location = new Point(11, 159);
 			labelYoloV8ONNXModel.Name = "labelYoloV8ONNXModel";
 			labelYoloV8ONNXModel.Size = new Size(160, 17);
 			labelYoloV8ONNXModel.TabIndex = 118;
 			labelYoloV8ONNXModel.Text = "YoloV8 ONNX Model :";
 			// 
+			// comboBoxOutputFormat
+			// 
+			comboBoxOutputFormat.DropDownStyle = ComboBoxStyle.DropDownList;
+			comboBoxOutputFormat.FormattingEnabled = true;
+			comboBoxOutputFormat.Items.AddRange(new object[] { "png", "jpg" });
+			comboBoxOutputFormat.Location = new Point(145, 250);
+			comboBoxOutputFormat.Name = "comboBoxOutputFormat";
+			comboBoxOutputFormat.Size = new Size(93, 25);
+			comboBoxOutputFormat.TabIndex = 119;
+			toolTip1.SetToolTip(comboBoxOutputFormat, "Select the file format for the output picture(s).\r\n\r\nJPG : Smaller file size, lower quality, no metadata support.\r\nPNG : Bigger file size, full quality, metadata support.");
+			comboBoxOutputFormat.SelectedIndexChanged += comboBoxOutputFormat_SelectedIndexChanged;
+			// 
 			// comboBoxYoloV8ONNXModels
 			// 
 			comboBoxYoloV8ONNXModels.DropDownStyle = ComboBoxStyle.DropDownList;
 			comboBoxYoloV8ONNXModels.FormattingEnabled = true;
-			comboBoxYoloV8ONNXModels.Location = new Point(177, 224);
+			comboBoxYoloV8ONNXModels.Location = new Point(177, 156);
 			comboBoxYoloV8ONNXModels.Name = "comboBoxYoloV8ONNXModels";
 			comboBoxYoloV8ONNXModels.Size = new Size(191, 25);
 			comboBoxYoloV8ONNXModels.TabIndex = 117;
@@ -564,7 +590,7 @@
 			// 
 			labelSampler.AutoSize = true;
 			labelSampler.ForeColor = Color.WhiteSmoke;
-			labelSampler.Location = new Point(11, 196);
+			labelSampler.Location = new Point(11, 220);
 			labelSampler.Name = "labelSampler";
 			labelSampler.Size = new Size(80, 17);
 			labelSampler.TabIndex = 114;
@@ -575,7 +601,7 @@
 			comboBoxSampler.DropDownStyle = ComboBoxStyle.DropDownList;
 			comboBoxSampler.FormattingEnabled = true;
 			comboBoxSampler.Items.AddRange(new object[] { "Euler", "Euler a", "DDIM", "LCM", "DPM++ 2M Karras" });
-			comboBoxSampler.Location = new Point(97, 193);
+			comboBoxSampler.Location = new Point(97, 218);
 			comboBoxSampler.Name = "comboBoxSampler";
 			comboBoxSampler.Size = new Size(141, 25);
 			comboBoxSampler.TabIndex = 113;
@@ -617,7 +643,7 @@
 			// 
 			labelSeed.AutoSize = true;
 			labelSeed.ForeColor = Color.WhiteSmoke;
-			labelSeed.Location = new Point(11, 166);
+			labelSeed.Location = new Point(11, 188);
 			labelSeed.Name = "labelSeed";
 			labelSeed.Size = new Size(56, 17);
 			labelSeed.TabIndex = 110;
@@ -625,7 +651,7 @@
 			// 
 			// numericUpDownSeed
 			// 
-			numericUpDownSeed.Location = new Point(73, 164);
+			numericUpDownSeed.Location = new Point(73, 188);
 			numericUpDownSeed.Maximum = new decimal(new int[] { int.MaxValue, 0, 0, 0 });
 			numericUpDownSeed.Minimum = new decimal(new int[] { 1, 0, 0, int.MinValue });
 			numericUpDownSeed.Name = "numericUpDownSeed";
@@ -675,7 +701,7 @@
 			// labelProgressStatus
 			// 
 			labelProgressStatus.AutoSize = true;
-			labelProgressStatus.Location = new Point(11, 248);
+			labelProgressStatus.Location = new Point(11, 274);
 			labelProgressStatus.Name = "labelProgressStatus";
 			labelProgressStatus.Size = new Size(104, 17);
 			labelProgressStatus.TabIndex = 5;
@@ -683,7 +709,7 @@
 			// 
 			// progressBarInference
 			// 
-			progressBarInference.Location = new Point(11, 268);
+			progressBarInference.Location = new Point(11, 294);
 			progressBarInference.Name = "progressBarInference";
 			progressBarInference.Size = new Size(693, 35);
 			progressBarInference.Step = 1;
@@ -707,7 +733,7 @@
 			// 
 			checkBoxEnablePreview.AutoSize = true;
 			checkBoxEnablePreview.ForeColor = Color.WhiteSmoke;
-			checkBoxEnablePreview.Location = new Point(710, 241);
+			checkBoxEnablePreview.Location = new Point(710, 267);
 			checkBoxEnablePreview.Name = "checkBoxEnablePreview";
 			checkBoxEnablePreview.Size = new Size(139, 21);
 			checkBoxEnablePreview.TabIndex = 2;
@@ -719,7 +745,7 @@
 			// buttonStopInference
 			// 
 			buttonStopInference.ForeColor = Color.Red;
-			buttonStopInference.Location = new Point(710, 268);
+			buttonStopInference.Location = new Point(710, 294);
 			buttonStopInference.Name = "buttonStopInference";
 			buttonStopInference.Size = new Size(65, 35);
 			buttonStopInference.TabIndex = 1;
@@ -731,7 +757,7 @@
 			// 
 			buttonInference.ContextMenuStrip = contextMenuStripButtonInference;
 			buttonInference.ForeColor = Color.Green;
-			buttonInference.Location = new Point(784, 268);
+			buttonInference.Location = new Point(784, 294);
 			buttonInference.Name = "buttonInference";
 			buttonInference.Size = new Size(100, 35);
 			buttonInference.TabIndex = 0;
@@ -792,7 +818,7 @@
 			AutoScaleMode = AutoScaleMode.Font;
 			AutoSizeMode = AutoSizeMode.GrowAndShrink;
 			BackColor = SystemColors.ControlDarkDark;
-			ClientSize = new Size(914, 736);
+			ClientSize = new Size(914, 756);
 			Controls.Add(groupBoxInference);
 			Controls.Add(groupBoxStableDiffusionWebUIConfig);
 			Controls.Add(groupBoxPictureColorDiffusionConfig);
@@ -886,5 +912,7 @@
 		private Label labelYoloV8ONNXModel;
 		private ComboBox comboBoxYoloV8ONNXModels;
 		private FileSystemWatcher fileSystemWatcherYoloV8ONNXModels;
+		private Label labelOutputFormat;
+		private ComboBox comboBoxOutputFormat;
 	}
 }

@@ -9,6 +9,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Formats.Png.Chunks;
 using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Formats.Jpeg;
 
 namespace PictureColorDiffusion
 {
@@ -56,6 +57,8 @@ namespace PictureColorDiffusion
 		{
 			// Set default sampler to Euler
 			comboBoxSampler.SelectedIndex = 0;
+			// Set default output format to png
+			comboBoxOutputFormat.SelectedIndex = 0;
 			// Set supported files as the only allowed files on the open file dialog
 			string supportedFilesFilter = "*." + string.Join(";*.", PictureHandler.SupportedExtensions);
 			openFileDialog1.Filter = "Pictures | " + supportedFilesFilter;
@@ -358,6 +361,23 @@ namespace PictureColorDiffusion
 		}
 
 		/// <summary>
+		/// Called when the selected output format change.
+		/// </summary>
+		private void comboBoxOutputFormat_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			// Disable interaction with the "include metadata" checkbox if output isn't png
+			if (comboBoxOutputFormat.Text == "png")
+			{
+				checkBoxIncludeMetadata.Enabled = true;
+			}
+			else 
+			{
+				checkBoxIncludeMetadata.Enabled = false;
+				checkBoxIncludeMetadata.Checked = false;
+			}
+		}
+
+		/// <summary>
 		/// Called when the user click on the "Interence" button
 		/// </summary>
 		private async void buttonInference_Click(object sender, EventArgs e)
@@ -554,6 +574,7 @@ namespace PictureColorDiffusion
 
 						// If metadata is enabled, set the comments metadata, stable diffusion webui already include the parameters metadata
 						PngMetadata? generatedImageMetadata;
+						// By default, generated images returned by stable diffusion always have the PNG mime type
 						bool isMetadataFound = generatedImage.Metadata.TryGetPngMetadata(out generatedImageMetadata);
 						if (checkBoxIncludeMetadata.Checked)
 						{
@@ -582,8 +603,20 @@ namespace PictureColorDiffusion
 						}
 
 						// Save the picture in the output directory with the same name
-						// We save as PNG as the generated images returned by stable diffusion seems to always have the PNG mime type
-						await generatedImage.SaveAsPngAsync(Path.Combine(textBoxPictureOutputPath.Text, Path.GetFileNameWithoutExtension(filePath) + ".png"), new PngEncoder() { CompressionLevel = PngCompressionLevel.DefaultCompression });
+						string generatedImageFullPathOutput = Path.Combine(textBoxPictureOutputPath.Text, Path.GetFileNameWithoutExtension(filePath) + "." + comboBoxOutputFormat.Text);
+						switch (comboBoxOutputFormat.Text) 
+						{
+							case "png":
+								await generatedImage.SaveAsPngAsync(generatedImageFullPathOutput, new PngEncoder() { CompressionLevel = PngCompressionLevel.DefaultCompression });
+								break;
+							case "jpg":
+								await generatedImage.SaveAsJpegAsync(generatedImageFullPathOutput, new JpegEncoder() { Quality = 90 });
+								break;
+							default:
+								MessageBox.Show($"Invalid output format : '{comboBoxOutputFormat.Text}'", "Inference", MessageBoxButtons.OK, MessageBoxIcon.Error);
+								break;
+						}
+
 
 						if (checkBoxEnablePreview.Checked)
 						{
