@@ -619,12 +619,12 @@
 			// 
 			// textBoxNegativePrompt
 			// 
-			textBoxNegativePrompt.Location = new Point(385, 128);
+			textBoxNegativePrompt.Location = new Point(385, 146);
 			textBoxNegativePrompt.Multiline = true;
 			textBoxNegativePrompt.Name = "textBoxNegativePrompt";
 			textBoxNegativePrompt.PlaceholderText = "Negative prompt";
 			textBoxNegativePrompt.ScrollBars = ScrollBars.Vertical;
-			textBoxNegativePrompt.Size = new Size(319, 105);
+			textBoxNegativePrompt.Size = new Size(319, 115);
 			textBoxNegativePrompt.TabIndex = 112;
 			toolTip1.SetToolTip(textBoxNegativePrompt, "Additional negative prompt added after the mode negative prompt");
 			// 
@@ -635,7 +635,7 @@
 			textBoxPrompt.Name = "textBoxPrompt";
 			textBoxPrompt.PlaceholderText = "Prompt";
 			textBoxPrompt.ScrollBars = ScrollBars.Vertical;
-			textBoxPrompt.Size = new Size(319, 105);
+			textBoxPrompt.Size = new Size(319, 120);
 			textBoxPrompt.TabIndex = 111;
 			toolTip1.SetToolTip(textBoxPrompt, "Additional prompt added between the mode prompt and the interrogation prompt (if enabled)");
 			// 
@@ -723,7 +723,7 @@
 			pictureBoxPreview.Enabled = false;
 			pictureBoxPreview.Location = new Point(710, 22);
 			pictureBoxPreview.Name = "pictureBoxPreview";
-			pictureBoxPreview.Size = new Size(175, 211);
+			pictureBoxPreview.Size = new Size(175, 239);
 			pictureBoxPreview.SizeMode = PictureBoxSizeMode.Zoom;
 			pictureBoxPreview.TabIndex = 3;
 			pictureBoxPreview.TabStop = false;
