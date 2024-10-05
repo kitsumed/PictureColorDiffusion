@@ -63,7 +63,7 @@ namespace PictureColorDiffusion.Utilities
 				}
 			},
 			// MangaXL mode
-			// NOTE: MOSTLY GOOD RESULTS BUT SEEMS TO ALWAYS KEEP THE SPEECH BUBBLES IN DOUBLE, NEED WORK AROUND
+			// NOTE: MOSTLY GOOD RESULTS BUT SEEMS TO ALWAYS KEEP THE SPEECH BUBBLES IN DOUBLE. Possible FIX: Add mask usage with controlnet to ignore speech bubbles.
 			{
 				"MangaXL", new PictureColorDiffusionModeModel()
 				{

@@ -838,8 +838,33 @@ namespace PictureColorDiffusion
 		{
 			// Get the path of files inside the directory that fileSystemWatcher watch (only .onnx models)
 			string[] modelsPath = Directory.GetFiles(fileSystemWatcherYoloV8ONNXModels.Path, "*.onnx");
+			// Store the name of the current model
+			string currentONNXModelName = comboBoxYoloV8ONNXModels.Text;
+			// The new selected item index number
+			int newIndexPosition = -1;
 			comboBoxYoloV8ONNXModels.Items.Clear();
 			comboBoxYoloV8ONNXModels.Items.AddRange(modelsPath.Select(modelPath => Path.GetFileNameWithoutExtension(modelPath)).ToArray());
+
+			if (e?.ChangeType == WatcherChangeTypes.Renamed)
+			{
+				RenamedEventArgs? eRenamedEvent = e as RenamedEventArgs;
+				if (eRenamedEvent != null)
+				{
+					if (Path.GetFileNameWithoutExtension(eRenamedEvent.OldFullPath) == currentONNXModelName)
+					{
+						// Search the position of the previously selected and now renamed file inside the combobox
+						newIndexPosition = comboBoxYoloV8ONNXModels.FindStringExact(Path.GetFileNameWithoutExtension(eRenamedEvent.Name));
+					}
+				}
+			}
+			else 
+			{
+				// Search the new position of the previously selected model
+				newIndexPosition = comboBoxYoloV8ONNXModels.FindStringExact(currentONNXModelName);
+			}
+
+			// Update the selected item to the index number
+			comboBoxYoloV8ONNXModels.SelectedIndex = newIndexPosition;
 		}
 
 		/// <summary>
