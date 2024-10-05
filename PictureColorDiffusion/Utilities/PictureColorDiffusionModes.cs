@@ -63,14 +63,14 @@ namespace PictureColorDiffusion.Utilities
 				}
 			},
 			// MangaXL mode
-			// NOTE: MOSTLY GOOD RESULTS BUT SEEMS TO ALWAYS KEEP THE SPEECH BUBBLES IN DOUBLE. Possible FIX: Add mask usage with controlnet to ignore speech bubbles.
+			// NOTE: MOSTLY GOOD RESULTS BUT SEEMS TO ALWAYS KEEP THE SPEECH BUBBLES IN DOUBLE. Possible FIX: Add mask usage with controlnet to ignore speech bubbles (controllite xl models dosn't seems to support mask)
 			{
 				"MangaXL", new PictureColorDiffusionModeModel()
 				{
 					prompt = "detailed (official style|animification), colored (comic|manga|4koma|3koma), masterpiece, absurdres, highres, textless version, very aesthetic, ",
 					negative_prompt = "greyscale, monochrome, deformed, jpeg artifacts, lineart, sepia, partially colored, low quality, lowres, worst quality, lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, signature, watermark, username, blurry, artist name, normal quality, high contrast, screentones, neon palette, color issue, ",
-					// Japanese JB4 paper size (in pixels) divided by 2.5 (taken from papersizes.io)
-					dynamicResizeMax = new ImageSharp.Size(1214, 1720),
+					// Japanese JB4 paper size (in pixels) divided by 2.5 (taken from papersizes.io) and rounded by dividing with 256
+					dynamicResizeMax = new ImageSharp.Size(1280, 1536),
 					interogateModel = "deepdanbooru",
 					controlNetModelNamePerUnit = ["bdsqlsz_controlllite_xl_lineart_anime_denoise", "bdsqlsz_controlllite_xl_depth_V2"],
 					controlNetUnits = [
@@ -94,6 +94,31 @@ namespace PictureColorDiffusion.Utilities
 						weight = 0.6,
 						guidance_start = 0,
 						guidance_end = 0.45,
+						control_mode = "Balanced",
+						resize_mode = "Just Resize",
+						pixel_perfect = true,
+						threshold_a = 0.5,
+						threshold_b = 0.5,
+					}]
+				}
+			},
+			// DrawingXL mode
+			{
+				"DrawingXL", new PictureColorDiffusionModeModel()
+				{
+					prompt = "masterpiece, absurdres, detailed official style, colored (drawing|animification), highres, textless version, very aesthetic, ",
+					negative_prompt = "greyscale, monochrome, deformed, jpeg artifacts, partially colored, low quality, lowres, worst quality, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, signature, watermark, username, blurry, artist name, normal quality, neon palette, color issue, muted color, ",
+					dynamicResizeMax = new ImageSharp.Size(1536, 1536),
+					interogateModel = "deepdanbooru",
+					controlNetModelNamePerUnit = ["bdsqlsz_controlllite_xl_lineart_anime_denoise"],
+					controlNetUnits = [
+					// UNIT 1 CONFIG
+					new StableDiffusionExtensionControlNetArg()
+					{
+						module = "lineart_anime_denoise",
+						weight = 0.8,
+						guidance_start = 0,
+						guidance_end = 0.8,
 						control_mode = "Balanced",
 						resize_mode = "Just Resize",
 						pixel_perfect = true,

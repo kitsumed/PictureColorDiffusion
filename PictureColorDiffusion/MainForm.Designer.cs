@@ -40,6 +40,8 @@
 			labelApiEndpoint = new Label();
 			textBoxApiEndpoint = new TextBox();
 			groupBoxPictureColorDiffusionConfig = new GroupBox();
+			radioButtonModeDrawingXL = new RadioButton();
+			radioButtonModeDrawingSD = new RadioButton();
 			radioButtonModeMangaXL = new RadioButton();
 			buttonClearReference = new Button();
 			labelReferencePicturePath = new Label();
@@ -196,6 +198,8 @@
 			// 
 			// groupBoxPictureColorDiffusionConfig
 			// 
+			groupBoxPictureColorDiffusionConfig.Controls.Add(radioButtonModeDrawingXL);
+			groupBoxPictureColorDiffusionConfig.Controls.Add(radioButtonModeDrawingSD);
 			groupBoxPictureColorDiffusionConfig.Controls.Add(radioButtonModeMangaXL);
 			groupBoxPictureColorDiffusionConfig.Controls.Add(buttonClearReference);
 			groupBoxPictureColorDiffusionConfig.Controls.Add(labelReferencePicturePath);
@@ -218,6 +222,30 @@
 			groupBoxPictureColorDiffusionConfig.TabIndex = 0;
 			groupBoxPictureColorDiffusionConfig.TabStop = false;
 			groupBoxPictureColorDiffusionConfig.Text = "Picture Color Diffusion Configuration";
+			// 
+			// radioButtonModeDrawingXL
+			// 
+			radioButtonModeDrawingXL.AutoSize = true;
+			radioButtonModeDrawingXL.Location = new Point(348, 124);
+			radioButtonModeDrawingXL.Name = "radioButtonModeDrawingXL";
+			radioButtonModeDrawingXL.Size = new Size(98, 21);
+			radioButtonModeDrawingXL.TabIndex = 114;
+			radioButtonModeDrawingXL.Text = "DrawingXL";
+			toolTip1.SetToolTip(radioButtonModeDrawingXL, "Drawing mode for SDXL models using danbooru prompt style.");
+			radioButtonModeDrawingXL.UseVisualStyleBackColor = true;
+			radioButtonModeDrawingXL.CheckedChanged += radioButtonSelectMode_CheckedChanged;
+			// 
+			// radioButtonModeDrawingSD
+			// 
+			radioButtonModeDrawingSD.AutoSize = true;
+			radioButtonModeDrawingSD.Location = new Point(244, 124);
+			radioButtonModeDrawingSD.Name = "radioButtonModeDrawingSD";
+			radioButtonModeDrawingSD.Size = new Size(98, 21);
+			radioButtonModeDrawingSD.TabIndex = 113;
+			radioButtonModeDrawingSD.Text = "DrawingSD";
+			toolTip1.SetToolTip(radioButtonModeDrawingSD, "Drawing mode for SD models using danbooru prompt style.");
+			radioButtonModeDrawingSD.UseVisualStyleBackColor = true;
+			radioButtonModeDrawingSD.CheckedChanged += radioButtonSelectMode_CheckedChanged;
 			// 
 			// radioButtonModeMangaXL
 			// 
@@ -304,6 +332,7 @@
 			// comboBoxUnit2ControlNetModel
 			// 
 			comboBoxUnit2ControlNetModel.DropDownStyle = ComboBoxStyle.DropDownList;
+			comboBoxUnit2ControlNetModel.Enabled = false;
 			comboBoxUnit2ControlNetModel.FormattingEnabled = true;
 			comboBoxUnit2ControlNetModel.Location = new Point(363, 43);
 			comboBoxUnit2ControlNetModel.Name = "comboBoxUnit2ControlNetModel";
@@ -315,6 +344,7 @@
 			// comboBoxUnit1ControlNetModel
 			// 
 			comboBoxUnit1ControlNetModel.DropDownStyle = ComboBoxStyle.DropDownList;
+			comboBoxUnit1ControlNetModel.Enabled = false;
 			comboBoxUnit1ControlNetModel.FormattingEnabled = true;
 			comboBoxUnit1ControlNetModel.Location = new Point(363, 16);
 			comboBoxUnit1ControlNetModel.Name = "comboBoxUnit1ControlNetModel";
@@ -930,5 +960,7 @@
 		private Label labelOutputFormat;
 		private ComboBox comboBoxOutputFormat;
 		private RadioButton radioButtonModeMangaXL;
+		private RadioButton radioButtonModeDrawingXL;
+		private RadioButton radioButtonModeDrawingSD;
 	}
 }

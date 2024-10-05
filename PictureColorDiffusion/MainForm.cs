@@ -310,7 +310,7 @@ namespace PictureColorDiffusion
 							// We remove 1 here since index start at position 0 insead of 1
 							int currentUnitIndex = itemControlTag - 1;
 
-							// All labels of in groupbox are for units, so we only ensure that the current control is a label before continuing
+							// All labels inside the groupbox are for a specific units, so we only ensure that the current control is a label before continuing
 							if (itemControl is Label)
 							{
 								// We update the text in a try statement to prevent throwing a error if we have less or more than
@@ -319,17 +319,32 @@ namespace PictureColorDiffusion
 								{
 									itemControl.Text = $"UNIT {itemControl.Tag} Controlnet model for '{currentConfiguration.controlNetModelNamePerUnit[currentUnitIndex]}' :";
 								}
-								catch { }
+								catch 
+								{
+									// If we have less or more than the maximum amount possible of units, change the unit label to "N/A" model.
+									itemControl.Text = $"UNIT {itemControl.Tag} Controlnet model for 'N/A' :";
+								}
 							}
-							else if (itemControl is ComboBox)
+							else if (itemControl is ComboBox) // If the current item is a comboBox
 							{
 								ComboBox comboBox = (ComboBox)itemControl;
-								// Search the comboBox for a entry containing the required model name
-								int matchingIndex = comboBox.Items.Cast<string>().ToList().FindIndex(value => value.Contains(currentConfiguration.controlNetModelNamePerUnit[currentUnitIndex]));
-								// If a matching entry was found, overwrite the selected index with the found index
-								if (matchingIndex != -1)
+								// Continue only if the currentConfiguration has a controlNetModelName inside its array for the position of currentUnitIndex.
+								if (currentUnitIndex < currentConfiguration.controlNetModelNamePerUnit.Length)
 								{
-									comboBox.SelectedIndex = matchingIndex;
+									// Enable the selection of a model for this unit
+									comboBox.Enabled = true;
+									// Search the comboBox for a entry containing the required model name
+									int matchingIndex = comboBox.Items.Cast<string>().ToList().FindIndex(value => value.Contains(currentConfiguration.controlNetModelNamePerUnit[currentUnitIndex]));
+									// If a matching entry was found, overwrite the selected index with the found index
+									if (matchingIndex != -1)
+									{
+										comboBox.SelectedIndex = matchingIndex;
+									}
+								}
+								else 
+								{
+									// Disable the selection of a model for this unit
+									comboBox.Enabled = false;
 								}
 							}
 						}
@@ -370,7 +385,7 @@ namespace PictureColorDiffusion
 			{
 				checkBoxIncludeMetadata.Enabled = true;
 			}
-			else 
+			else
 			{
 				checkBoxIncludeMetadata.Enabled = false;
 				checkBoxIncludeMetadata.Checked = false;
@@ -604,7 +619,7 @@ namespace PictureColorDiffusion
 
 						// Save the picture in the output directory with the same name
 						string generatedImageFullPathOutput = Path.Combine(textBoxPictureOutputPath.Text, Path.GetFileNameWithoutExtension(filePath) + "." + comboBoxOutputFormat.Text);
-						switch (comboBoxOutputFormat.Text) 
+						switch (comboBoxOutputFormat.Text)
 						{
 							case "png":
 								await generatedImage.SaveAsPngAsync(generatedImageFullPathOutput, new PngEncoder() { CompressionLevel = PngCompressionLevel.DefaultCompression });
@@ -857,7 +872,7 @@ namespace PictureColorDiffusion
 					}
 				}
 			}
-			else 
+			else
 			{
 				// Search the new position of the previously selected model
 				newIndexPosition = comboBoxYoloV8ONNXModels.FindStringExact(currentONNXModelName);
