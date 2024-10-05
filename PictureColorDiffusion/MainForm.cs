@@ -151,6 +151,7 @@ namespace PictureColorDiffusion
 					// Get Models & Vae from the API
 					List<StableDiffusionModelModel>? stableDiffusionModels = await StableAPI.GetModels();
 					List<StableDiffusionVAEModel>? stableDiffusionVAEs = await StableAPI.GetVaes();
+					StableDiffusionOptionsModel? currentSettings = await StableAPI.GetOptions();
 					if (stableDiffusionModels != null && stableDiffusionVAEs != null)
 					{
 						// Add VAE "pre-existing" options
@@ -161,6 +162,13 @@ namespace PictureColorDiffusion
 						// Set default selected item
 						comboBoxModels.SelectedIndex = 0;
 						comboBoxVaes.SelectedIndex = 0;
+						// If currentSettings exist, update the selected item with the ones currently loaded by the webui
+						if (currentSettings != null)
+						{
+							comboBoxModels.SelectedIndex = comboBoxModels.FindStringExact(currentSettings.sd_model_checkpoint);
+							comboBoxVaes.SelectedIndex = comboBoxVaes.FindStringExact(currentSettings.sd_vae);
+							numericUpDownClipSkip.Value = Convert.ToDecimal(currentSettings.CLIP_stop_at_last_layers);
+						}
 						// Enable apply change button since valid values have been added the two comboBox
 						buttonApplyChanges.Enabled = true;
 					}
@@ -221,6 +229,14 @@ namespace PictureColorDiffusion
 				MessageBox.Show($"Failed to update stable diffusion settings.\nFor more informations, verify your webui console.", "Post Options Request", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			}
 			UseWaitCursor = false;
+		}
+
+		/// <summary>
+		/// Called when the user change the value of the numericUpDownClipSkip.
+		/// </summary>
+		private void numericUpDownClipSkip_ValueChanged(object sender, EventArgs e)
+		{
+			labelClipSkipWarning.Visible = numericUpDownClipSkip.Value != 2;
 		}
 
 		// == Picture Color Diffusion Configuration ==
@@ -319,7 +335,7 @@ namespace PictureColorDiffusion
 								{
 									itemControl.Text = $"UNIT {itemControl.Tag} Controlnet model for '{currentConfiguration.controlNetModelNamePerUnit[currentUnitIndex]}' :";
 								}
-								catch 
+								catch
 								{
 									// If we have less or more than the maximum amount possible of units, change the unit label to "N/A" model.
 									itemControl.Text = $"UNIT {itemControl.Tag} Controlnet model for 'N/A' :";
@@ -341,7 +357,7 @@ namespace PictureColorDiffusion
 										comboBox.SelectedIndex = matchingIndex;
 									}
 								}
-								else 
+								else
 								{
 									// Disable the selection of a model for this unit
 									comboBox.Enabled = false;

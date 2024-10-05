@@ -127,7 +127,7 @@
     <value>323, 17</value>
   </metadata>
   <data name="textBoxReferencePicturePath.ToolTip" xml:space="preserve">
-    <value>The reference picture path is a additional controlnet unit that use a picture as it's reference for all colorisations.
+    <value>The reference picture path is a additional controlnet unit that use a picture as a reference for all colorisations.
 This option is optional, and is currently only supported by controlnet on SD models.</value>
   </data>
   <metadata name="contextMenuStripButtonInference.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

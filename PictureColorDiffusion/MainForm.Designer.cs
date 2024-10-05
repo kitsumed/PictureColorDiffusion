@@ -60,6 +60,7 @@
 			textBoxPictureOutputPath = new TextBox();
 			buttonSelectPictureOutputFolder = new Button();
 			groupBoxStableDiffusionWebUIConfig = new GroupBox();
+			labelClipSkipWarning = new Label();
 			buttonApplyChanges = new Button();
 			labelClipSkip = new Label();
 			numericUpDownClipSkip = new NumericUpDown();
@@ -131,14 +132,14 @@
 			textBoxPicturePath.PlaceholderText = "Please select a input file/folder.";
 			textBoxPicturePath.ReadOnly = true;
 			textBoxPicturePath.Size = new Size(451, 23);
-			textBoxPicturePath.TabIndex = 100;
+			textBoxPicturePath.TabIndex = 8;
 			// 
 			// buttonSelectPicture
 			// 
 			buttonSelectPicture.Location = new Point(613, 28);
 			buttonSelectPicture.Name = "buttonSelectPicture";
 			buttonSelectPicture.Size = new Size(120, 23);
-			buttonSelectPicture.TabIndex = 5;
+			buttonSelectPicture.TabIndex = 9;
 			buttonSelectPicture.Tag = "file";
 			buttonSelectPicture.Text = "Select File";
 			buttonSelectPicture.UseVisualStyleBackColor = true;
@@ -149,7 +150,7 @@
 			buttonSelectPicturesFolder.Location = new Point(739, 28);
 			buttonSelectPicturesFolder.Name = "buttonSelectPicturesFolder";
 			buttonSelectPicturesFolder.Size = new Size(145, 23);
-			buttonSelectPicturesFolder.TabIndex = 6;
+			buttonSelectPicturesFolder.TabIndex = 10;
 			buttonSelectPicturesFolder.Tag = "folder";
 			buttonSelectPicturesFolder.Text = "Select Folder";
 			buttonSelectPicturesFolder.UseVisualStyleBackColor = true;
@@ -173,7 +174,7 @@
 			buttonVerifyApiEndpoint.Location = new Point(809, 15);
 			buttonVerifyApiEndpoint.Name = "buttonVerifyApiEndpoint";
 			buttonVerifyApiEndpoint.Size = new Size(75, 30);
-			buttonVerifyApiEndpoint.TabIndex = 1;
+			buttonVerifyApiEndpoint.TabIndex = 2;
 			buttonVerifyApiEndpoint.Text = "Verify";
 			buttonVerifyApiEndpoint.UseVisualStyleBackColor = true;
 			buttonVerifyApiEndpoint.Click += buttonVerifyApiEndpoint_Click;
@@ -194,7 +195,7 @@
 			textBoxApiEndpoint.MaxLength = 1000;
 			textBoxApiEndpoint.Name = "textBoxApiEndpoint";
 			textBoxApiEndpoint.Size = new Size(663, 23);
-			textBoxApiEndpoint.TabIndex = 100;
+			textBoxApiEndpoint.TabIndex = 1;
 			textBoxApiEndpoint.Text = "http://127.0.0.1:7860";
 			// 
 			// groupBoxPictureColorDiffusionConfig
@@ -220,7 +221,7 @@
 			groupBoxPictureColorDiffusionConfig.Location = new Point(12, 163);
 			groupBoxPictureColorDiffusionConfig.Name = "groupBoxPictureColorDiffusionConfig";
 			groupBoxPictureColorDiffusionConfig.Size = new Size(890, 240);
-			groupBoxPictureColorDiffusionConfig.TabIndex = 0;
+			groupBoxPictureColorDiffusionConfig.TabIndex = 2;
 			groupBoxPictureColorDiffusionConfig.TabStop = false;
 			groupBoxPictureColorDiffusionConfig.Text = "Picture Color Diffusion Configuration";
 			// 
@@ -230,7 +231,7 @@
 			radioButtonModeDrawingXL.Location = new Point(348, 124);
 			radioButtonModeDrawingXL.Name = "radioButtonModeDrawingXL";
 			radioButtonModeDrawingXL.Size = new Size(98, 21);
-			radioButtonModeDrawingXL.TabIndex = 114;
+			radioButtonModeDrawingXL.TabIndex = 19;
 			radioButtonModeDrawingXL.Text = "DrawingXL";
 			toolTip1.SetToolTip(radioButtonModeDrawingXL, "Drawing mode for SDXL models using danbooru prompt style.");
 			radioButtonModeDrawingXL.UseVisualStyleBackColor = true;
@@ -242,7 +243,7 @@
 			radioButtonModeDrawingSD.Location = new Point(244, 124);
 			radioButtonModeDrawingSD.Name = "radioButtonModeDrawingSD";
 			radioButtonModeDrawingSD.Size = new Size(98, 21);
-			radioButtonModeDrawingSD.TabIndex = 113;
+			radioButtonModeDrawingSD.TabIndex = 18;
 			radioButtonModeDrawingSD.Text = "DrawingSD";
 			toolTip1.SetToolTip(radioButtonModeDrawingSD, "Drawing mode for SD models using danbooru prompt style.");
 			radioButtonModeDrawingSD.UseVisualStyleBackColor = true;
@@ -254,7 +255,7 @@
 			radioButtonModeMangaXL.Location = new Point(156, 124);
 			radioButtonModeMangaXL.Name = "radioButtonModeMangaXL";
 			radioButtonModeMangaXL.Size = new Size(82, 21);
-			radioButtonModeMangaXL.TabIndex = 112;
+			radioButtonModeMangaXL.TabIndex = 17;
 			radioButtonModeMangaXL.Text = "MangaXL";
 			toolTip1.SetToolTip(radioButtonModeMangaXL, "Manga mode for SDXL models using danbooru prompt style.");
 			radioButtonModeMangaXL.UseVisualStyleBackColor = true;
@@ -265,7 +266,7 @@
 			buttonClearReference.Location = new Point(669, 94);
 			buttonClearReference.Name = "buttonClearReference";
 			buttonClearReference.Size = new Size(64, 25);
-			buttonClearReference.TabIndex = 111;
+			buttonClearReference.TabIndex = 14;
 			buttonClearReference.Tag = "file";
 			buttonClearReference.Text = "Clear";
 			buttonClearReference.UseVisualStyleBackColor = true;
@@ -288,7 +289,7 @@
 			textBoxReferencePicturePath.PlaceholderText = "Please select a reference picture. (optional) (SD only)";
 			textBoxReferencePicturePath.ReadOnly = true;
 			textBoxReferencePicturePath.Size = new Size(451, 23);
-			textBoxReferencePicturePath.TabIndex = 110;
+			textBoxReferencePicturePath.TabIndex = 13;
 			toolTip1.SetToolTip(textBoxReferencePicturePath, resources.GetString("textBoxReferencePicturePath.ToolTip"));
 			// 
 			// buttonSelectReference
@@ -296,7 +297,7 @@
 			buttonSelectReference.Location = new Point(739, 94);
 			buttonSelectReference.Name = "buttonSelectReference";
 			buttonSelectReference.Size = new Size(145, 23);
-			buttonSelectReference.TabIndex = 109;
+			buttonSelectReference.TabIndex = 15;
 			buttonSelectReference.Tag = "folder";
 			buttonSelectReference.Text = "Select File";
 			buttonSelectReference.UseVisualStyleBackColor = true;
@@ -314,7 +315,7 @@
 			groupBoxControlnetConfiguration.Location = new Point(11, 150);
 			groupBoxControlnetConfiguration.Name = "groupBoxControlnetConfiguration";
 			groupBoxControlnetConfiguration.Size = new Size(873, 78);
-			groupBoxControlnetConfiguration.TabIndex = 107;
+			groupBoxControlnetConfiguration.TabIndex = 20;
 			groupBoxControlnetConfiguration.TabStop = false;
 			groupBoxControlnetConfiguration.Text = "Controlnet Configuration";
 			// 
@@ -324,7 +325,7 @@
 			buttonRefreshControlNetModels.Location = new Point(728, 16);
 			buttonRefreshControlNetModels.Name = "buttonRefreshControlNetModels";
 			buttonRefreshControlNetModels.Size = new Size(139, 52);
-			buttonRefreshControlNetModels.TabIndex = 110;
+			buttonRefreshControlNetModels.TabIndex = 23;
 			buttonRefreshControlNetModels.Tag = "controlnet";
 			buttonRefreshControlNetModels.Text = "Refresh";
 			buttonRefreshControlNetModels.UseVisualStyleBackColor = true;
@@ -338,7 +339,7 @@
 			comboBoxUnit2ControlNetModel.Location = new Point(363, 43);
 			comboBoxUnit2ControlNetModel.Name = "comboBoxUnit2ControlNetModel";
 			comboBoxUnit2ControlNetModel.Size = new Size(360, 25);
-			comboBoxUnit2ControlNetModel.TabIndex = 109;
+			comboBoxUnit2ControlNetModel.TabIndex = 22;
 			comboBoxUnit2ControlNetModel.Tag = "2";
 			toolTip1.SetToolTip(comboBoxUnit2ControlNetModel, "Please select the controlnet model that matches the processor name");
 			// 
@@ -350,7 +351,7 @@
 			comboBoxUnit1ControlNetModel.Location = new Point(363, 16);
 			comboBoxUnit1ControlNetModel.Name = "comboBoxUnit1ControlNetModel";
 			comboBoxUnit1ControlNetModel.Size = new Size(360, 25);
-			comboBoxUnit1ControlNetModel.TabIndex = 108;
+			comboBoxUnit1ControlNetModel.TabIndex = 21;
 			comboBoxUnit1ControlNetModel.Tag = "1";
 			toolTip1.SetToolTip(comboBoxUnit1ControlNetModel, "Please select the controlnet model that matches the processor name");
 			// 
@@ -382,7 +383,7 @@
 			radioButtonModeMangaSD.Location = new Point(73, 124);
 			radioButtonModeMangaSD.Name = "radioButtonModeMangaSD";
 			radioButtonModeMangaSD.Size = new Size(82, 21);
-			radioButtonModeMangaSD.TabIndex = 106;
+			radioButtonModeMangaSD.TabIndex = 16;
 			radioButtonModeMangaSD.Text = "MangaSD";
 			toolTip1.SetToolTip(radioButtonModeMangaSD, "Manga mode for SD models using danbooru prompt style.");
 			radioButtonModeMangaSD.UseVisualStyleBackColor = true;
@@ -415,14 +416,14 @@
 			textBoxPictureOutputPath.PlaceholderText = "Please select a output folder.";
 			textBoxPictureOutputPath.ReadOnly = true;
 			textBoxPictureOutputPath.Size = new Size(521, 23);
-			textBoxPictureOutputPath.TabIndex = 104;
+			textBoxPictureOutputPath.TabIndex = 11;
 			// 
 			// buttonSelectPictureOutputFolder
 			// 
 			buttonSelectPictureOutputFolder.Location = new Point(739, 61);
 			buttonSelectPictureOutputFolder.Name = "buttonSelectPictureOutputFolder";
 			buttonSelectPictureOutputFolder.Size = new Size(145, 23);
-			buttonSelectPictureOutputFolder.TabIndex = 103;
+			buttonSelectPictureOutputFolder.TabIndex = 12;
 			buttonSelectPictureOutputFolder.Tag = "folder";
 			buttonSelectPictureOutputFolder.Text = "Select Folder";
 			buttonSelectPictureOutputFolder.UseVisualStyleBackColor = true;
@@ -430,6 +431,7 @@
 			// 
 			// groupBoxStableDiffusionWebUIConfig
 			// 
+			groupBoxStableDiffusionWebUIConfig.Controls.Add(labelClipSkipWarning);
 			groupBoxStableDiffusionWebUIConfig.Controls.Add(buttonApplyChanges);
 			groupBoxStableDiffusionWebUIConfig.Controls.Add(labelClipSkip);
 			groupBoxStableDiffusionWebUIConfig.Controls.Add(numericUpDownClipSkip);
@@ -442,9 +444,20 @@
 			groupBoxStableDiffusionWebUIConfig.Location = new Point(12, 72);
 			groupBoxStableDiffusionWebUIConfig.Name = "groupBoxStableDiffusionWebUIConfig";
 			groupBoxStableDiffusionWebUIConfig.Size = new Size(890, 85);
-			groupBoxStableDiffusionWebUIConfig.TabIndex = 104;
+			groupBoxStableDiffusionWebUIConfig.TabIndex = 1;
 			groupBoxStableDiffusionWebUIConfig.TabStop = false;
 			groupBoxStableDiffusionWebUIConfig.Text = "Stable Diffusion WebUI Configuration (Optional)";
+			// 
+			// labelClipSkipWarning
+			// 
+			labelClipSkipWarning.AutoSize = true;
+			labelClipSkipWarning.ForeColor = Color.Red;
+			labelClipSkipWarning.Location = new Point(188, 59);
+			labelClipSkipWarning.Name = "labelClipSkipWarning";
+			labelClipSkipWarning.Size = new Size(464, 17);
+			labelClipSkipWarning.TabIndex = 109;
+			labelClipSkipWarning.Text = "Warning, most 2D SD/XL models are using a clip skip of 2.";
+			labelClipSkipWarning.Visible = false;
 			// 
 			// buttonApplyChanges
 			// 
@@ -453,7 +466,7 @@
 			buttonApplyChanges.Location = new Point(739, 51);
 			buttonApplyChanges.Name = "buttonApplyChanges";
 			buttonApplyChanges.Size = new Size(145, 28);
-			buttonApplyChanges.TabIndex = 108;
+			buttonApplyChanges.TabIndex = 7;
 			buttonApplyChanges.Text = "Apply Changes";
 			toolTip1.SetToolTip(buttonApplyChanges, "Apply changes to your stable diffusion webui. These changes are persistent");
 			buttonApplyChanges.UseVisualStyleBackColor = true;
@@ -472,12 +485,13 @@
 			// numericUpDownClipSkip
 			// 
 			numericUpDownClipSkip.Location = new Point(108, 53);
-			numericUpDownClipSkip.Maximum = new decimal(new int[] { 20, 0, 0, 0 });
+			numericUpDownClipSkip.Maximum = new decimal(new int[] { 12, 0, 0, 0 });
 			numericUpDownClipSkip.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
 			numericUpDownClipSkip.Name = "numericUpDownClipSkip";
 			numericUpDownClipSkip.Size = new Size(74, 23);
-			numericUpDownClipSkip.TabIndex = 106;
+			numericUpDownClipSkip.TabIndex = 5;
 			numericUpDownClipSkip.Value = new decimal(new int[] { 2, 0, 0, 0 });
+			numericUpDownClipSkip.ValueChanged += numericUpDownClipSkip_ValueChanged;
 			// 
 			// comboBoxVaes
 			// 
@@ -487,7 +501,7 @@
 			comboBoxVaes.Location = new Point(476, 22);
 			comboBoxVaes.Name = "comboBoxVaes";
 			comboBoxVaes.Size = new Size(319, 25);
-			comboBoxVaes.TabIndex = 3;
+			comboBoxVaes.TabIndex = 4;
 			// 
 			// labelVae
 			// 
@@ -506,14 +520,14 @@
 			comboBoxModels.Location = new Point(76, 22);
 			comboBoxModels.Name = "comboBoxModels";
 			comboBoxModels.Size = new Size(303, 25);
-			comboBoxModels.TabIndex = 2;
+			comboBoxModels.TabIndex = 3;
 			// 
 			// buttonRefreshModels
 			// 
 			buttonRefreshModels.Location = new Point(809, 15);
 			buttonRefreshModels.Name = "buttonRefreshModels";
 			buttonRefreshModels.Size = new Size(75, 30);
-			buttonRefreshModels.TabIndex = 4;
+			buttonRefreshModels.TabIndex = 6;
 			buttonRefreshModels.Tag = "stableDiffusion";
 			buttonRefreshModels.Text = "Refresh";
 			buttonRefreshModels.UseVisualStyleBackColor = true;
@@ -557,7 +571,7 @@
 			groupBoxInference.Location = new Point(12, 409);
 			groupBoxInference.Name = "groupBoxInference";
 			groupBoxInference.Size = new Size(890, 335);
-			groupBoxInference.TabIndex = 105;
+			groupBoxInference.TabIndex = 3;
 			groupBoxInference.TabStop = false;
 			groupBoxInference.Text = "Inference";
 			// 
@@ -589,7 +603,7 @@
 			comboBoxOutputFormat.Location = new Point(145, 250);
 			comboBoxOutputFormat.Name = "comboBoxOutputFormat";
 			comboBoxOutputFormat.Size = new Size(93, 25);
-			comboBoxOutputFormat.TabIndex = 119;
+			comboBoxOutputFormat.TabIndex = 32;
 			toolTip1.SetToolTip(comboBoxOutputFormat, "Select the file format for the output picture(s).\r\n\r\nJPG : Smaller file size, lower quality, no metadata support.\r\nPNG : Bigger file size, full quality, metadata support.");
 			comboBoxOutputFormat.SelectedIndexChanged += comboBoxOutputFormat_SelectedIndexChanged;
 			// 
@@ -600,7 +614,7 @@
 			comboBoxYoloV8ONNXModels.Location = new Point(177, 156);
 			comboBoxYoloV8ONNXModels.Name = "comboBoxYoloV8ONNXModels";
 			comboBoxYoloV8ONNXModels.Size = new Size(191, 25);
-			comboBoxYoloV8ONNXModels.TabIndex = 117;
+			comboBoxYoloV8ONNXModels.TabIndex = 29;
 			toolTip1.SetToolTip(comboBoxYoloV8ONNXModels, "Select the YoloV8 ONNX model to use for the segmentation.\r\nPut your models into the models directory of PictureColorDiffusion.");
 			// 
 			// checkBoxUseYoloV8
@@ -612,7 +626,7 @@
 			checkBoxUseYoloV8.Location = new Point(11, 131);
 			checkBoxUseYoloV8.Name = "checkBoxUseYoloV8";
 			checkBoxUseYoloV8.Size = new Size(211, 21);
-			checkBoxUseYoloV8.TabIndex = 116;
+			checkBoxUseYoloV8.TabIndex = 28;
 			checkBoxUseYoloV8.Text = "Use YoloV8 segmentation";
 			toolTip1.SetToolTip(checkBoxUseYoloV8, "Inference the original picture with a YoloV8 segmentation model\r\nto copy the matching parts of the original image on top of the\r\ngenerated image (colored).");
 			checkBoxUseYoloV8.UseVisualStyleBackColor = true;
@@ -627,7 +641,7 @@
 			checkBoxIncludeMetadata.Location = new Point(11, 103);
 			checkBoxIncludeMetadata.Name = "checkBoxIncludeMetadata";
 			checkBoxIncludeMetadata.Size = new Size(155, 21);
-			checkBoxIncludeMetadata.TabIndex = 115;
+			checkBoxIncludeMetadata.TabIndex = 27;
 			checkBoxIncludeMetadata.Text = "Include metadata";
 			toolTip1.SetToolTip(checkBoxIncludeMetadata, "Include metadata about generation settings in the output picture");
 			checkBoxIncludeMetadata.UseVisualStyleBackColor = true;
@@ -650,7 +664,7 @@
 			comboBoxSampler.Location = new Point(97, 218);
 			comboBoxSampler.Name = "comboBoxSampler";
 			comboBoxSampler.Size = new Size(141, 25);
-			comboBoxSampler.TabIndex = 113;
+			comboBoxSampler.TabIndex = 31;
 			toolTip1.SetToolTip(comboBoxSampler, "Change the generation sampler.\r\nEuler is recommended.");
 			// 
 			// labelAdditionalPrompt
@@ -671,7 +685,7 @@
 			textBoxNegativePrompt.PlaceholderText = "Negative prompt";
 			textBoxNegativePrompt.ScrollBars = ScrollBars.Vertical;
 			textBoxNegativePrompt.Size = new Size(319, 115);
-			textBoxNegativePrompt.TabIndex = 112;
+			textBoxNegativePrompt.TabIndex = 34;
 			toolTip1.SetToolTip(textBoxNegativePrompt, "Additional negative prompt added after the mode negative prompt");
 			// 
 			// textBoxPrompt
@@ -682,7 +696,7 @@
 			textBoxPrompt.PlaceholderText = "Prompt";
 			textBoxPrompt.ScrollBars = ScrollBars.Vertical;
 			textBoxPrompt.Size = new Size(319, 120);
-			textBoxPrompt.TabIndex = 111;
+			textBoxPrompt.TabIndex = 33;
 			toolTip1.SetToolTip(textBoxPrompt, "Additional prompt added between the mode prompt and the interrogation prompt (if enabled)");
 			// 
 			// labelSeed
@@ -702,7 +716,7 @@
 			numericUpDownSeed.Minimum = new decimal(new int[] { 1, 0, 0, int.MinValue });
 			numericUpDownSeed.Name = "numericUpDownSeed";
 			numericUpDownSeed.Size = new Size(165, 23);
-			numericUpDownSeed.TabIndex = 109;
+			numericUpDownSeed.TabIndex = 30;
 			toolTip1.SetToolTip(numericUpDownSeed, "Seed used to generate the picture.\r\nA fixed seed can give more consistent results.\r\nSet -1 for a random seed");
 			numericUpDownSeed.Value = new decimal(new int[] { 1, 0, 0, int.MinValue });
 			// 
@@ -715,7 +729,7 @@
 			checkBoxUseInterrogation.Location = new Point(11, 76);
 			checkBoxUseInterrogation.Name = "checkBoxUseInterrogation";
 			checkBoxUseInterrogation.Size = new Size(163, 21);
-			checkBoxUseInterrogation.TabIndex = 8;
+			checkBoxUseInterrogation.TabIndex = 26;
 			checkBoxUseInterrogation.Text = "Use interrogation";
 			toolTip1.SetToolTip(checkBoxUseInterrogation, "Improve prompting using the results of an integration model on the content of the input picture");
 			checkBoxUseInterrogation.UseVisualStyleBackColor = true;
@@ -727,7 +741,7 @@
 			checkBoxKeepOriginalSize.Location = new Point(11, 49);
 			checkBoxKeepOriginalSize.Name = "checkBoxKeepOriginalSize";
 			checkBoxKeepOriginalSize.Size = new Size(235, 21);
-			checkBoxKeepOriginalSize.TabIndex = 7;
+			checkBoxKeepOriginalSize.TabIndex = 25;
 			checkBoxKeepOriginalSize.Text = "Keep original picture size";
 			toolTip1.SetToolTip(checkBoxKeepOriginalSize, "Disable the dynamic resize of input pictures");
 			checkBoxKeepOriginalSize.UseVisualStyleBackColor = true;
@@ -739,7 +753,7 @@
 			checkBoxControlNetLowvram.Location = new Point(11, 22);
 			checkBoxControlNetLowvram.Name = "checkBoxControlNetLowvram";
 			checkBoxControlNetLowvram.Size = new Size(227, 21);
-			checkBoxControlNetLowvram.TabIndex = 6;
+			checkBoxControlNetLowvram.TabIndex = 24;
 			checkBoxControlNetLowvram.Text = "Enable controlnet lowvram";
 			toolTip1.SetToolTip(checkBoxControlNetLowvram, "Enable controlnet lowvram mode");
 			checkBoxControlNetLowvram.UseVisualStyleBackColor = true;
@@ -782,7 +796,7 @@
 			checkBoxEnablePreview.Location = new Point(710, 267);
 			checkBoxEnablePreview.Name = "checkBoxEnablePreview";
 			checkBoxEnablePreview.Size = new Size(139, 21);
-			checkBoxEnablePreview.TabIndex = 2;
+			checkBoxEnablePreview.TabIndex = 35;
 			checkBoxEnablePreview.Text = "Enable preview";
 			toolTip1.SetToolTip(checkBoxEnablePreview, "Show output image into the preview box");
 			checkBoxEnablePreview.UseVisualStyleBackColor = true;
@@ -794,7 +808,7 @@
 			buttonStopInference.Location = new Point(710, 294);
 			buttonStopInference.Name = "buttonStopInference";
 			buttonStopInference.Size = new Size(65, 35);
-			buttonStopInference.TabIndex = 1;
+			buttonStopInference.TabIndex = 36;
 			buttonStopInference.Text = "Stop";
 			buttonStopInference.UseVisualStyleBackColor = true;
 			buttonStopInference.Click += buttonStopInference_Click;
@@ -806,7 +820,7 @@
 			buttonInference.Location = new Point(784, 294);
 			buttonInference.Name = "buttonInference";
 			buttonInference.Size = new Size(100, 35);
-			buttonInference.TabIndex = 0;
+			buttonInference.TabIndex = 37;
 			buttonInference.Text = "Inference";
 			buttonInference.UseVisualStyleBackColor = true;
 			buttonInference.Click += buttonInference_Click;
@@ -963,5 +977,6 @@
 		private RadioButton radioButtonModeMangaXL;
 		private RadioButton radioButtonModeDrawingXL;
 		private RadioButton radioButtonModeDrawingSD;
+		private Label labelClipSkipWarning;
 	}
 }
