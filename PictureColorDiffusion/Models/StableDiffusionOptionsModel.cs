@@ -14,7 +14,8 @@
 		/// <summary>
 		/// Clip skip
 		/// </summary>
-		public int CLIP_stop_at_last_layers { get; set; } = 2;
+		/// *For some reasons, the API sometimes return CLIP skip as a double insead of a int
+		public double CLIP_stop_at_last_layers { get; set; } = 2;
 
 		/// <summary>
 		/// VAE

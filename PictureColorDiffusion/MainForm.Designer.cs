@@ -29,6 +29,7 @@
 		private void InitializeComponent()
 		{
 			components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			labelPicturePath = new Label();
 			folderBrowserDialog1 = new FolderBrowserDialog();
 			textBoxPicturePath = new TextBox();
@@ -284,11 +285,11 @@
 			// 
 			textBoxReferencePicturePath.Location = new Point(212, 94);
 			textBoxReferencePicturePath.Name = "textBoxReferencePicturePath";
-			textBoxReferencePicturePath.PlaceholderText = "Please select a reference picture. (optional)";
+			textBoxReferencePicturePath.PlaceholderText = "Please select a reference picture. (optional) (SD only)";
 			textBoxReferencePicturePath.ReadOnly = true;
 			textBoxReferencePicturePath.Size = new Size(451, 23);
 			textBoxReferencePicturePath.TabIndex = 110;
-			toolTip1.SetToolTip(textBoxReferencePicturePath, "The reference picture path is a additional controlnet unit that use a picture as it's reference for all colorisations.\r\nThis option is optional.");
+			toolTip1.SetToolTip(textBoxReferencePicturePath, resources.GetString("textBoxReferencePicturePath.ToolTip"));
 			// 
 			// buttonSelectReference
 			// 

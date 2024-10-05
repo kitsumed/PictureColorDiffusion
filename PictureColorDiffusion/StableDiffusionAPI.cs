@@ -104,6 +104,23 @@ namespace PictureColorDiffusion
 		}
 
 		/// <summary>
+		/// Make a get request to get the options (settings) of stable diffusion webui.
+		/// Currently only returning the seed and name of the SD/XL model & VAE loaded.
+		/// </summary>
+		/// <returns>A StableDiffusionOptionsModel with the current settings, or null if the API response isn't a success status</returns>
+		public async Task<StableDiffusionOptionsModel?> GetOptions()
+		{
+			using HttpResponseMessage responseMessage = await _httpClient.GetAsync(new Uri(ApiEndpoint, "/sdapi/v1/options"));
+			if (responseMessage.IsSuccessStatusCode)
+			{
+				using Stream responseContentStream = await responseMessage.Content.ReadAsStreamAsync();
+				StableDiffusionOptionsModel? stableDiffusionOptions = await JsonSerializer.DeserializeAsync<StableDiffusionOptionsModel>(responseContentStream);
+				return stableDiffusionOptions;
+			}
+			return null;
+		}
+
+		/// <summary>
 		/// Make a post request to change the options (settings) of stable diffusion webui
 		/// </summary>
 		/// <param name="stableDiffusionProcessingTxt2ImgModel">Model with request informations with the new options</param>
@@ -112,8 +129,18 @@ namespace PictureColorDiffusion
 		{
 			string serializedOptionsModel = JsonSerializer.Serialize(stableDiffusionOptionsModel);
 			using StringContent requestContent = new StringContent(serializedOptionsModel, Encoding.UTF8, "application/json");
-
 			using HttpResponseMessage responseMessage = await _httpClient.PostAsync(new Uri(ApiEndpoint, "/sdapi/v1/options"), requestContent);
+
+			// Since the PostOptions api request sometimes return a 200 OK when it fail, we manually verify if the settings where applied
+			StableDiffusionOptionsModel? currentStableDiffusionOptions = await GetOptions();
+			if (currentStableDiffusionOptions != null) 
+			{
+				// Verify if the SD checkpoint and VAE have the same name, CLIP SKIP is the same and that the response is a success status
+				return (currentStableDiffusionOptions.sd_model_checkpoint == stableDiffusionOptionsModel.sd_model_checkpoint
+					&& currentStableDiffusionOptions.sd_vae == stableDiffusionOptionsModel.sd_vae
+					&& currentStableDiffusionOptions.CLIP_stop_at_last_layers == stableDiffusionOptionsModel.CLIP_stop_at_last_layers
+					&& responseMessage.IsSuccessStatusCode);
+			}
 			return responseMessage.IsSuccessStatusCode;
 		}
 

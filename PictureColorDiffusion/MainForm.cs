@@ -218,7 +218,7 @@ namespace PictureColorDiffusion
 			}
 			else
 			{
-				MessageBox.Show($"Failed to update stable diffusion settings.", "Post Options Request", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				MessageBox.Show($"Failed to update stable diffusion settings.\nFor more informations, verify your webui console.", "Post Options Request", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			}
 			UseWaitCursor = false;
 		}
@@ -648,7 +648,7 @@ namespace PictureColorDiffusion
 					}
 					else
 					{
-						DialogResult dialogResult = MessageBox.Show("Failed to get results from stable diffusion api.\nPress 'Cancel' to stop the inference.", "Inference", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+						DialogResult dialogResult = MessageBox.Show("Failed to get results from stable diffusion api.\nVerify your webui console for more informations on a possible error.\nPress 'Cancel' to stop the inference.", "Inference", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
 						if (dialogResult == DialogResult.Cancel)
 						{
 							InferenceCancellationTokenSource.Cancel();
