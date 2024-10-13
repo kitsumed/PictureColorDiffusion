@@ -55,6 +55,7 @@ namespace PictureColorDiffusion
 		/// </summary>
 		private void MainForm_Load(object sender, EventArgs e)
 		{
+			SetApplicationState(ApplicationStatesEnum.waiting_for_api);
 			// Set default sampler to Euler
 			comboBoxSampler.SelectedIndex = 0;
 			// Set default output format to png
@@ -62,15 +63,15 @@ namespace PictureColorDiffusion
 			// Set supported files as the only allowed files on the open file dialog
 			string supportedFilesFilter = "*." + string.Join(";*.", PictureHandler.SupportedExtensions);
 			openFileDialog1.Filter = "Pictures | " + supportedFilesFilter;
-			// Verify if the default ApiEndpoint is valid or invalid at startup
-			SetApplicationState(ApplicationStatesEnum.waiting_for_api);
-			buttonVerifyApiEndpoint.PerformClick();
-			// Ensure that the models directory exist
+			// Ensure that the models directory for ONNX models exist
 			Directory.CreateDirectory(ModelsDirectoryPath);
 			// Set the fileSystemWatcherRefreshONNXModels monitoring to the models directory
 			fileSystemWatcherYoloV8ONNXModels.Path = ModelsDirectoryPath;
 			// Force a refresh of the YoloV8 ONNX model list
 			fileSystemWatcherRefreshONNXModels(null, null);
+
+			// Verify if the default ApiEndpoint is valid or invalid at startup
+			buttonVerifyApiEndpoint.PerformClick();
 		}
 
 		/// <summary>
@@ -165,8 +166,24 @@ namespace PictureColorDiffusion
 						// If currentSettings exist, update the selected item with the ones currently loaded by the webui
 						if (currentSettings != null)
 						{
-							comboBoxModels.SelectedIndex = comboBoxModels.FindStringExact(currentSettings.sd_model_checkpoint);
-							comboBoxVaes.SelectedIndex = comboBoxVaes.FindStringExact(currentSettings.sd_vae);
+							// Remove the model hash & extension from the name
+							string modelName = currentSettings.sd_model_checkpoint.Remove(currentSettings.sd_model_checkpoint.LastIndexOf(" ["));
+							modelName = modelName.Remove(modelName.LastIndexOf('.'));
+							// Don't remove the extension from vae models since the api return the names with the extensions
+							string vaeName = currentSettings.sd_vae;
+
+							// Verify if a directory path/names is in the modelName
+							if (modelName.Contains(@"\"))
+							{
+								// Replace the paths (\) to a underscore to match to models name returned by the API
+								modelName = modelName.Replace('\\','_');
+							}
+							if (vaeName.Contains(@"\"))
+							{
+								vaeName = vaeName.Replace('\\', '_');
+							}
+							comboBoxModels.SelectedIndex = comboBoxModels.FindStringExact(modelName);
+							comboBoxVaes.SelectedIndex = comboBoxVaes.FindStringExact(vaeName);
 							numericUpDownClipSkip.Value = Convert.ToDecimal(currentSettings.CLIP_stop_at_last_layers);
 						}
 						// Enable apply change button since valid values have been added the two comboBox
@@ -222,11 +239,11 @@ namespace PictureColorDiffusion
 			bool isSuccess = await StableAPI.PostOptions(optionsModel);
 			if (isSuccess)
 			{
-				MessageBox.Show($"Updated stable diffusion settings!", "Post Options Request", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MessageBox.Show($"Updated stable diffusion settings!", "Stable Diffusion WebUI Configuration", MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 			else
 			{
-				MessageBox.Show($"Failed to update stable diffusion settings.\nFor more informations, verify your webui console.", "Post Options Request", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				MessageBox.Show($"Failed to update stable diffusion settings.\nFor more informations, verify your webui console.", "Stable Diffusion WebUI Configuration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			}
 			UseWaitCursor = false;
 		}
