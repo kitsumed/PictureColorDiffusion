@@ -135,8 +135,14 @@ namespace PictureColorDiffusion
 			StableDiffusionOptionsModel? currentStableDiffusionOptions = await GetOptions();
 			if (currentStableDiffusionOptions != null) 
 			{
+				// Verify if a directory path/names is in the newModelName
+				if (currentStableDiffusionOptions.sd_model_checkpoint.Contains(@"\"))
+				{
+					// Replace the paths (\) to a underscore to match to the format shown in the webui
+					currentStableDiffusionOptions.sd_model_checkpoint = currentStableDiffusionOptions.sd_model_checkpoint.Replace('\\', '_');
+				}
 				// Verify if the SD checkpoint and VAE have the same name, CLIP SKIP is the same and that the response is a success status
-				return (currentStableDiffusionOptions.sd_model_checkpoint == stableDiffusionOptionsModel.sd_model_checkpoint
+				return (currentStableDiffusionOptions.sd_model_checkpoint.Contains(stableDiffusionOptionsModel.sd_model_checkpoint)
 					&& currentStableDiffusionOptions.sd_vae == stableDiffusionOptionsModel.sd_vae
 					&& currentStableDiffusionOptions.CLIP_stop_at_last_layers == stableDiffusionOptionsModel.CLIP_stop_at_last_layers
 					&& responseMessage.IsSuccessStatusCode);
