@@ -53,3 +53,6 @@ Keeping the `Use interrogation` feature enabled can also help, as it's automatic
 
 ### Why doesn't my generated image resemble the original when using SDXL Pony based models?
 I’m not sure of the exact cause of this issue, but I’ve concluded that some community-made ControlNet models are more compatible with SDXL Pony-based models than others. During my tests, the best results I achieved were with [MistoLine](https://huggingface.co/TheMistoAI/MistoLine/blob/main/mistoLine_rank256.safetensors) [^1].
+
+### Why do objects detected by YOLOv8 occasionally show up duplicated in the output results when using an SDXL mode?
+I encountered this issue while testing the `MangaXL` mode with [my YOLOv8 model for speech bubble segmentation](https://huggingface.co/kitsumed/yolov8m_seg-speech-bubble/blob/main/model_dynamic.onnx). I concluded that the combination of certain SDXL models and ControlNet models causes ControlNet to attempt to recreate the object in an incorrect position. For reference, this issue often occurred with **bdsqlsz** models but rarely happened with [MistoLine](https://huggingface.co/TheMistoAI/MistoLine/blob/main/mistoLine_rank256.safetensors) [^1]. So using a different ControlNet model that is compatible with SDXL should resolve the issue.
