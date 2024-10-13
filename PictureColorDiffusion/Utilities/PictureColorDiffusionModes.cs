@@ -102,6 +102,44 @@ namespace PictureColorDiffusion.Utilities
 					}]
 				}
 			},
+			// DrawingSD mode
+			{
+				"DrawingSD", new PictureColorDiffusionModeModel()
+				{
+					prompt = "masterpiece, best quality, ultra-detailed, detailed official style, animification, ",
+					negative_prompt = "worst quality, low quality, lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, normal quality, jpeg artifacts, signature, watermark, username, blurry, greyscale, monochrome, deformed, ",
+					dynamicResizeMax = new ImageSharp.Size(1536, 1536),
+					interogateModel = "deepdanbooru",
+					controlNetModelNamePerUnit = ["control_v11p_sd15s2_lineart_anime", "control_v11p_sd15_canny"],
+					controlNetUnits = [
+					// UNIT 1 CONFIG
+					new StableDiffusionExtensionControlNetArg()
+					{
+						module = "lineart_anime_denoise",
+						weight = 0.7,
+						guidance_start = 0,
+						guidance_end = 0.7,
+						control_mode = "Balanced",
+						resize_mode = "Just Resize",
+						pixel_perfect = true,
+						threshold_a = 0.5,
+						threshold_b = 0.5,
+					},
+					// UNIT 2 CONFIG
+					new StableDiffusionExtensionControlNetArg()
+					{
+						module = "canny",
+						weight = 0.8,
+						guidance_start = 0,
+						guidance_end = 0.4,
+						control_mode = "Balanced",
+						resize_mode = "Just Resize",
+						pixel_perfect = true,
+						threshold_a = 200,
+						threshold_b = 248,
+					}]
+				}
+			},
 			// DrawingXL mode
 			{
 				"DrawingXL", new PictureColorDiffusionModeModel()

@@ -515,15 +515,14 @@ namespace PictureColorDiffusion
 						enabled = true,
 						control_mode = "Balanced",
 						model = "None",
-						// This unit is the only unit that won't update the low_vram state if checked DURING the foreach loop
+						// This unit is the only unit that won't update the low_vram state if checked DURING the foreach loop (batch inference)
 						low_vram = checkBoxControlNetLowvram.Checked,
-						pixel_perfect = false,
-						processor_res = 768,
+						pixel_perfect = true,
 						resize_mode = "Crop and Resize",
-						weight = 0.5,
+						weight = 0.7,
 						module = "reference_only",
 						guidance_start = 0,
-						guidance_end = 0.5,
+						guidance_end = 0.6,
 						image = new StableDiffusionExtensionControlNetArgImage()
 						{
 							image = PictureHandler.ImageSharpToBase64(await PictureHandler.LoadAsImageSharp(textBoxReferencePicturePath.Text))
@@ -679,7 +678,7 @@ namespace PictureColorDiffusion
 								await generatedImage.SaveAsPngAsync(generatedImageFullPathOutput, new PngEncoder() { CompressionLevel = PngCompressionLevel.DefaultCompression });
 								break;
 							case "jpg":
-								await generatedImage.SaveAsJpegAsync(generatedImageFullPathOutput, new JpegEncoder() { Quality = 90 });
+								await generatedImage.SaveAsJpegAsync(generatedImageFullPathOutput, new JpegEncoder() { Quality = 96 });
 								break;
 							default:
 								MessageBox.Show($"Invalid output format : '{comboBoxOutputFormat.Text}'", "Inference", MessageBoxButtons.OK, MessageBoxIcon.Error);
