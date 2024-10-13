@@ -13,10 +13,10 @@ The results with these images are somewhat poor, but more recent manga typically
         <img src="media\MangaMode\input\0.jpg" width="250" height="340">
     </td>
     <td>
-        <img src="media\MangaMode\sd\0.jpg" width="250" height="340">
+        <img src="media\MangaMode\SD\0.jpg" width="250" height="340">
     </td>
     <td>
-        <img src="media\MangaMode\xl\0.jpg" width="250" height="340">
+        <img src="media\MangaMode\XL\0.jpg" width="250" height="340">
     </td>
   </tr>
 
@@ -26,10 +26,10 @@ The results with these images are somewhat poor, but more recent manga typically
         <img src="media\MangaMode\input\1.jpg" width="250" height="340">
     </td>
     <td>
-        <img src="media\MangaMode\sd\1.jpg" width="250" height="340">
+        <img src="media\MangaMode\SD\1.jpg" width="250" height="340">
     </td>
     <td>
-        <img src="media\MangaMode\xl\1.jpg" width="250" height="340">
+        <img src="media\MangaMode\XL\1.jpg" width="250" height="340">
     </td>
   </tr> 
   
