@@ -4,6 +4,8 @@ PictureColorDiffusion was born after multiple attempts to color 2D grayscale ima
 ## What is PictureColorDiffusion?
 PictureColorDiffusion is a program that automate 2d colorization of drawings / manga / comics using Stable Diffusion's WebUI API, it's interrogation feature, the controlnet extension and other features on the application side.
 
+### [Showcase here!!](SHOWCASE.md)
+
 ## Requirements
 * [AUTOMATIC1111 Stable Diffusion WebUI](https://github.com/AUTOMATIC1111/stable-diffusion-webui) (Can be run locally or remotly, like on google colabs)
     * Need to be run with the `--api` argument.

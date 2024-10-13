@@ -1,3 +1,4 @@
+[Back to readme](README.md)
 # Manga Modes
 The two images from the manga mode showcase were taken from ***Say Hello to Black Jack***, a manga in the public domain.
 
