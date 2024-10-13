@@ -70,6 +70,8 @@
 			buttonRefreshModels = new Button();
 			labelModel = new Label();
 			groupBoxInference = new GroupBox();
+			labelSteps = new Label();
+			numericUpDownSteps = new NumericUpDown();
 			labelOutputFormat = new Label();
 			labelYoloV8ONNXModel = new Label();
 			comboBoxOutputFormat = new ComboBox();
@@ -104,6 +106,7 @@
 			groupBoxStableDiffusionWebUIConfig.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)numericUpDownClipSkip).BeginInit();
 			groupBoxInference.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)numericUpDownSteps).BeginInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDownSeed).BeginInit();
 			((System.ComponentModel.ISupportInitialize)pictureBoxPreview).BeginInit();
 			contextMenuStripButtonInference.SuspendLayout();
@@ -545,6 +548,8 @@
 			// 
 			// groupBoxInference
 			// 
+			groupBoxInference.Controls.Add(labelSteps);
+			groupBoxInference.Controls.Add(numericUpDownSteps);
 			groupBoxInference.Controls.Add(labelOutputFormat);
 			groupBoxInference.Controls.Add(labelYoloV8ONNXModel);
 			groupBoxInference.Controls.Add(comboBoxOutputFormat);
@@ -574,6 +579,27 @@
 			groupBoxInference.TabIndex = 3;
 			groupBoxInference.TabStop = false;
 			groupBoxInference.Text = "Inference";
+			// 
+			// labelSteps
+			// 
+			labelSteps.AutoSize = true;
+			labelSteps.ForeColor = Color.WhiteSmoke;
+			labelSteps.Location = new Point(244, 188);
+			labelSteps.Name = "labelSteps";
+			labelSteps.Size = new Size(64, 17);
+			labelSteps.TabIndex = 122;
+			labelSteps.Text = "Steps :";
+			// 
+			// numericUpDownSteps
+			// 
+			numericUpDownSteps.Location = new Point(314, 188);
+			numericUpDownSteps.Maximum = new decimal(new int[] { 60, 0, 0, 0 });
+			numericUpDownSteps.Minimum = new decimal(new int[] { 12, 0, 0, 0 });
+			numericUpDownSteps.Name = "numericUpDownSteps";
+			numericUpDownSteps.Size = new Size(54, 23);
+			numericUpDownSteps.TabIndex = 33;
+			toolTip1.SetToolTip(numericUpDownSteps, "Number of steps to generate picture.\r\nIt is recommended to leave the setting to it's default value.");
+			numericUpDownSteps.Value = new decimal(new int[] { 12, 0, 0, 0 });
 			// 
 			// labelOutputFormat
 			// 
@@ -666,6 +692,7 @@
 			comboBoxSampler.Size = new Size(141, 25);
 			comboBoxSampler.TabIndex = 31;
 			toolTip1.SetToolTip(comboBoxSampler, "Change the generation sampler.\r\nEuler is recommended.");
+			comboBoxSampler.SelectedIndexChanged += comboBoxSampler_SelectedIndexChanged;
 			// 
 			// labelAdditionalPrompt
 			// 
@@ -685,7 +712,7 @@
 			textBoxNegativePrompt.PlaceholderText = "Negative prompt";
 			textBoxNegativePrompt.ScrollBars = ScrollBars.Vertical;
 			textBoxNegativePrompt.Size = new Size(319, 115);
-			textBoxNegativePrompt.TabIndex = 34;
+			textBoxNegativePrompt.TabIndex = 35;
 			toolTip1.SetToolTip(textBoxNegativePrompt, "Additional negative prompt added after the mode negative prompt");
 			// 
 			// textBoxPrompt
@@ -696,7 +723,7 @@
 			textBoxPrompt.PlaceholderText = "Prompt";
 			textBoxPrompt.ScrollBars = ScrollBars.Vertical;
 			textBoxPrompt.Size = new Size(319, 120);
-			textBoxPrompt.TabIndex = 33;
+			textBoxPrompt.TabIndex = 34;
 			toolTip1.SetToolTip(textBoxPrompt, "Additional prompt added between the mode prompt and the interrogation prompt (if enabled)");
 			// 
 			// labelSeed
@@ -796,7 +823,7 @@
 			checkBoxEnablePreview.Location = new Point(710, 267);
 			checkBoxEnablePreview.Name = "checkBoxEnablePreview";
 			checkBoxEnablePreview.Size = new Size(139, 21);
-			checkBoxEnablePreview.TabIndex = 35;
+			checkBoxEnablePreview.TabIndex = 36;
 			checkBoxEnablePreview.Text = "Enable preview";
 			toolTip1.SetToolTip(checkBoxEnablePreview, "Show output image into the preview box");
 			checkBoxEnablePreview.UseVisualStyleBackColor = true;
@@ -808,7 +835,7 @@
 			buttonStopInference.Location = new Point(710, 294);
 			buttonStopInference.Name = "buttonStopInference";
 			buttonStopInference.Size = new Size(65, 35);
-			buttonStopInference.TabIndex = 36;
+			buttonStopInference.TabIndex = 37;
 			buttonStopInference.Text = "Stop";
 			buttonStopInference.UseVisualStyleBackColor = true;
 			buttonStopInference.Click += buttonStopInference_Click;
@@ -820,7 +847,7 @@
 			buttonInference.Location = new Point(784, 294);
 			buttonInference.Name = "buttonInference";
 			buttonInference.Size = new Size(100, 35);
-			buttonInference.TabIndex = 37;
+			buttonInference.TabIndex = 38;
 			buttonInference.Text = "Inference";
 			buttonInference.UseVisualStyleBackColor = true;
 			buttonInference.Click += buttonInference_Click;
@@ -901,6 +928,7 @@
 			((System.ComponentModel.ISupportInitialize)numericUpDownClipSkip).EndInit();
 			groupBoxInference.ResumeLayout(false);
 			groupBoxInference.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)numericUpDownSteps).EndInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDownSeed).EndInit();
 			((System.ComponentModel.ISupportInitialize)pictureBoxPreview).EndInit();
 			contextMenuStripButtonInference.ResumeLayout(false);
@@ -978,5 +1006,7 @@
 		private RadioButton radioButtonModeDrawingXL;
 		private RadioButton radioButtonModeDrawingSD;
 		private Label labelClipSkipWarning;
+		private Label labelSteps;
+		private NumericUpDown numericUpDownSteps;
 	}
 }

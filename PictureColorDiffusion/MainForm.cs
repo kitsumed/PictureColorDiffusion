@@ -176,7 +176,7 @@ namespace PictureColorDiffusion
 							if (modelName.Contains(@"\"))
 							{
 								// Replace the paths (\) to a underscore to match to models name returned by the API
-								modelName = modelName.Replace('\\','_');
+								modelName = modelName.Replace('\\', '_');
 							}
 							if (vaeName.Contains(@"\"))
 							{
@@ -283,7 +283,7 @@ namespace PictureColorDiffusion
 					}
 					break;
 				default:
-					MessageBox.Show($"Function 'buttonSelectPicture_Click' was called with TAG value '{currentButton.Tag}'.", "Invalid TAG Value", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show($"Method 'buttonSelectPicture_Click' was called with TAG value '{currentButton.Tag}'.", "Invalid TAG Value", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					break;
 			}
 		}
@@ -422,6 +422,28 @@ namespace PictureColorDiffusion
 			{
 				checkBoxIncludeMetadata.Enabled = false;
 				checkBoxIncludeMetadata.Checked = false;
+			}
+		}
+
+		/// <summary>
+		/// Called when the selected sampler change.
+		/// </summary>
+		private void comboBoxSampler_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			switch (comboBoxSampler.Text) 
+			{
+				case "Euler":
+				case "Euler a":
+				case "DDIM":
+				case "LCM":
+					numericUpDownSteps.Value = 12;
+					break;
+				case "DPM++ 2M Karras":
+					numericUpDownSteps.Value = 24;
+					break;
+				default:
+					MessageBox.Show($"Missing default steps for the sampler '{comboBoxSampler.Text}.'", "comboBoxSampler_SelectedIndexChanged", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					break;
 			}
 		}
 
@@ -583,8 +605,7 @@ namespace PictureColorDiffusion
 						width = originalImageSize.Width,
 						height = originalImageSize.Height,
 						seed = (int)numericUpDownSeed.Value,
-						// The number of steps for samplers are taken from https://youtu.be/Ek5r0eRJvy8?t=143
-						steps = 12,
+						steps = Convert.ToInt32(numericUpDownSteps.Value),
 						cfg_scale = 7,
 						sampler_name = comboBoxSampler.Text,
 						alwayson_scripts = new StableDiffusionProcessingAlwaysonScriptsModel()
