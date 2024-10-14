@@ -130,7 +130,7 @@ The two images from the drawing mode showcase are in the public domain.
 **ControlNet Configuration**
 
 * **UNIT 1** : [control_v11p_sd15s2_lineart_anime](https://huggingface.co/lllyasviel/ControlNet-v1-1/blob/main/control_v11p_sd15s2_lineart_anime.pth) ([YAML](https://huggingface.co/lllyasviel/ControlNet-v1-1/blob/main/control_v11p_sd15s2_lineart_anime.yaml))
-* **UNIT 2** : [control_v11p_sd15_softedge](https://huggingface.co/lllyasviel/ControlNet-v1-1/blob/main/control_v11p_sd15_softedge.pth) ([YAML](https://huggingface.co/lllyasviel/ControlNet-v1-1/blob/main/control_v11p_sd15_softedge.yaml))
+* **UNIT 2** : [control_v11p_sd15_canny](https://huggingface.co/lllyasviel/ControlNet-v1-1/blob/main/control_v11p_sd15_canny.pth) ([YAML](https://huggingface.co/lllyasviel/ControlNet-v1-1/blob/main/control_v11p_sd15_canny.yaml))
 
 **Inference Configuration**
 
