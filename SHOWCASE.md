@@ -1,4 +1,7 @@
 [Back to readme](README.md)
+# Application Preview
+<img src="media\app.png" width="600" height="470">
+
 # Manga Modes
 The two images from the manga mode showcase were taken from ***Say Hello to Black Jack***, a manga in the public domain.
 

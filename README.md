@@ -53,6 +53,11 @@ There are some work arounds, you could train a Lora with colored images of what 
 You can also use the additional prompt & negative prompt section to add informations on what you are trying to colorize. 
 Keeping the `Use interrogation` feature enabled can also help, as it's automatically adding additional information on what you are trying to colorize.
 
+### My generated image is completly different from the input image.
+If your generated image is completely different from your input image, it means ControlNet probably wasn't used for the generation. You can easily check this by opening your web UI console and searching for errors.
+
+The error typically ends with ``Exception: ControlNet model [MODEL-NAME](StableDiffusionVersion.SDXL) is not compatible with sd model(StableDiffusionVersion.SD1x)`` or something similar. In this example, the web UI is indicating that you are using a Stable Diffusion SD1.x model (``with sd model(StableDiffusionVersion.SD1x)``), but that the ControlNet model you selected was made for SDXL (``ControlNet model [MODEL-NAME](StableDiffusionVersion.SDXL)``). Thus, Controlnet failed to load, and the web UI continued without ControlNet, generating a picture completely different from the input image. You need to make sure that your Controlnet model support the same version as your StableDiffusion (SD) model.
+
 ### Why doesn't my generated image resemble the original when using SDXL Pony based models?
 I’m not sure of the exact cause of this issue, but I’ve concluded that some community-made ControlNet models are more compatible with SDXL Pony-based models than others. During my tests, the best results I achieved were with [MistoLine](https://huggingface.co/TheMistoAI/MistoLine/blob/main/mistoLine_rank256.safetensors) [^1].
 
