@@ -136,8 +136,9 @@ namespace PictureColorDiffusion.Utilities
 		/// </summary>
 		/// <param name="originalPicture">The image to extract its content from</param>
 		/// <param name="imageMask">The mask image</param>
+		/// <param name="smoothEdges">If true, applies morphological operations to create sharp, linear edges by removing irregular pixels (default: false)</param>
 		/// <returns>A ImageSharp Image that contains the content of the originalPicture that matched against the mask</returns>
-		public static Image<Rgba32> ExtractImageFromMask(Image<Rgba32> originalPicture, Image<Rgba32> imageMask) 
+		public static Image<Rgba32> ExtractImageFromMask(Image<Rgba32> originalPicture, Image<Rgba32> imageMask, bool smoothEdges = false) 
 		{
 			// Iterate over each pixel to apply the mask to the original picture
 			Image<Rgba32> resultImage = new Image<Rgba32>(originalPicture.Width, originalPicture.Height);
@@ -166,7 +167,229 @@ namespace PictureColorDiffusion.Utilities
 					}
 				}
 			}
+
+			// Apply morphological edge smoothing if requested - creates sharp, linear edges
+			if (smoothEdges)
+			{
+				// Create a binary mask from the extracted content
+				Image<Rgba32> binaryMask = new Image<Rgba32>(resultImage.Width, resultImage.Height);
+				
+				// Build binary mask where white = content exists, black = transparent
+				for (int y = 0; y < resultImage.Height; y++)
+				{
+					for (int x = 0; x < resultImage.Width; x++)
+					{
+						if (resultImage[x, y].A > 0)
+						{
+							binaryMask[x, y] = new Rgba32(255, 255, 255, 255);
+						}
+					}
+				}
+
+				// Apply very aggressive morphological operations for round/oval shapes
+				// Multiple closing passes to fill gaps and smooth edges progressively
+				
+				// First closing - very aggressive to handle large irregularities
+				Image<Rgba32> dilatedMask1 = MorphologicalDilate(binaryMask, 8);
+				Image<Rgba32> closedMask1 = MorphologicalErode(dilatedMask1, 8);
+				dilatedMask1.Dispose();
+				
+				// Second closing - moderate to further smooth
+				Image<Rgba32> dilatedMask2 = MorphologicalDilate(closedMask1, 4);
+				Image<Rgba32> closedMask2 = MorphologicalErode(dilatedMask2, 4);
+				closedMask1.Dispose();
+				dilatedMask2.Dispose();
+				
+				// Third closing - fine smoothing
+				Image<Rgba32> dilatedMask3 = MorphologicalDilate(closedMask2, 2);
+				Image<Rgba32> closedMask3 = MorphologicalErode(dilatedMask3, 2);
+				closedMask2.Dispose();
+				dilatedMask3.Dispose();
+				
+				// Opening to remove any remaining spikes and protrusions
+				Image<Rgba32> erodedMask = MorphologicalErode(closedMask3, 4);
+				Image<Rgba32> openedMask = MorphologicalDilate(erodedMask, 4);
+				closedMask3.Dispose();
+				erodedMask.Dispose();
+				
+				// Second opening pass for stubborn spikes
+				Image<Rgba32> erodedMask2 = MorphologicalErode(openedMask, 2);
+				Image<Rgba32> smoothedMask = MorphologicalDilate(erodedMask2, 2);
+				openedMask.Dispose();
+				erodedMask2.Dispose();
+
+				// Apply the morphologically processed mask back to the result
+				Image<Rgba32> smoothedResult = new Image<Rgba32>(resultImage.Width, resultImage.Height);
+				
+				for (int y = 0; y < resultImage.Height; y++)
+				{
+					for (int x = 0; x < resultImage.Width; x++)
+					{
+						// If the processed mask says this pixel should exist
+						if (smoothedMask[x, y].A > 0)
+						{
+							Rgba32 originalPixel = resultImage[x, y];
+							
+							// If we have original content here, use it
+							if (originalPixel.A > 0)
+							{
+								smoothedResult[x, y] = originalPixel;
+							}
+							else
+							{
+								// Pixel was added by morphological operations - interpolate from nearby
+								Rgba32 interpolatedColor = InterpolateNearbyPixels(resultImage, x, y, 6);
+								if (interpolatedColor.A > 0)
+								{
+									smoothedResult[x, y] = interpolatedColor;
+								}
+							}
+						}
+					}
+				}
+
+				binaryMask.Dispose();
+				smoothedMask.Dispose();
+				resultImage.Dispose();
+				return smoothedResult;
+			}
+
 			return resultImage;
+		}
+
+		/// <summary>
+		/// Morphological dilation operation - expands white regions
+		/// </summary>
+		private static Image<Rgba32> MorphologicalDilate(Image<Rgba32> mask, int iterations)
+		{
+			Image<Rgba32> result = mask.Clone();
+
+			for (int iter = 0; iter < iterations; iter++)
+			{
+				Image<Rgba32> temp = result.Clone();
+				
+				// Only process pixels that are near edges (have at least one transparent neighbor)
+				for (int y = 1; y < result.Height - 1; y++)
+				{
+					for (int x = 1; x < result.Width - 1; x++)
+					{
+						// Skip if pixel is already white and surrounded by white pixels (interior)
+						if (temp[x, y].A > 0)
+						{
+							// Check if all neighbors are also white - if so, skip (interior pixel)
+							if (temp[x - 1, y].A > 0 && temp[x + 1, y].A > 0 && 
+								temp[x, y - 1].A > 0 && temp[x, y + 1].A > 0 &&
+								temp[x - 1, y - 1].A > 0 && temp[x + 1, y - 1].A > 0 && 
+								temp[x - 1, y + 1].A > 0 && temp[x + 1, y + 1].A > 0)
+							{
+								continue; // Skip interior pixels
+							}
+						}
+						
+						// Process edge pixels: if any neighbor has alpha > 0, set this pixel to white
+						if (temp[x - 1, y].A > 0 || temp[x + 1, y].A > 0 || 
+							temp[x, y - 1].A > 0 || temp[x, y + 1].A > 0 ||
+							temp[x - 1, y - 1].A > 0 || temp[x + 1, y - 1].A > 0 || 
+							temp[x - 1, y + 1].A > 0 || temp[x + 1, y + 1].A > 0)
+						{
+							result[x, y] = new Rgba32(255, 255, 255, 255);
+						}
+					}
+				}
+				
+				temp.Dispose();
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Morphological erosion operation - shrinks white regions
+		/// </summary>
+		private static Image<Rgba32> MorphologicalErode(Image<Rgba32> mask, int iterations)
+		{
+			Image<Rgba32> result = mask.Clone();
+
+			for (int iter = 0; iter < iterations; iter++)
+			{
+				Image<Rgba32> temp = result.Clone();
+				
+				// Only process pixels that are near edges (have at least one transparent neighbor)
+				for (int y = 1; y < result.Height - 1; y++)
+				{
+					for (int x = 1; x < result.Width - 1; x++)
+					{
+						// Only process white pixels that are on or near the edge
+						if (temp[x, y].A == 0) continue; // Skip transparent pixels
+						
+						// Check if all neighbors are white - if so, skip (deep interior pixel)
+						if (temp[x - 1, y].A > 0 && temp[x + 1, y].A > 0 && 
+							temp[x, y - 1].A > 0 && temp[x, y + 1].A > 0 &&
+							temp[x - 1, y - 1].A > 0 && temp[x + 1, y - 1].A > 0 && 
+							temp[x - 1, y + 1].A > 0 && temp[x + 1, y + 1].A > 0)
+						{
+							continue; // Skip deep interior pixels
+						}
+						
+						// Process edge pixels: if any neighbor has alpha == 0, set this pixel to transparent
+						if (temp[x - 1, y].A == 0 || temp[x + 1, y].A == 0 || 
+							temp[x, y - 1].A == 0 || temp[x, y + 1].A == 0 ||
+							temp[x - 1, y - 1].A == 0 || temp[x + 1, y - 1].A == 0 || 
+							temp[x - 1, y + 1].A == 0 || temp[x + 1, y + 1].A == 0)
+						{
+							result[x, y] = new Rgba32(0, 0, 0, 0);
+						}
+					}
+				}
+				
+				temp.Dispose();
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Interpolate color from nearby non-transparent pixels
+		/// </summary>
+		/// <param name="image">The source image</param>
+		/// <param name="centerX">Center X coordinate</param>
+		/// <param name="centerY">Center Y coordinate</param>
+		/// <param name="radius">Search radius</param>
+		/// <returns>Interpolated color or transparent if no nearby pixels found</returns>
+		private static Rgba32 InterpolateNearbyPixels(Image<Rgba32> image, int centerX, int centerY, int radius)
+		{
+			int totalR = 0, totalG = 0, totalB = 0, count = 0;
+
+			// Search in a square around the center point
+			for (int dy = -radius; dy <= radius; dy++)
+			{
+				for (int dx = -radius; dx <= radius; dx++)
+				{
+					int x = centerX + dx;
+					int y = centerY + dy;
+
+					// Check bounds
+					if (x >= 0 && x < image.Width && y >= 0 && y < image.Height)
+					{
+						Rgba32 pixel = image[x, y];
+						if (pixel.A > 0)
+						{
+							totalR += pixel.R;
+							totalG += pixel.G;
+							totalB += pixel.B;
+							count++;
+						}
+					}
+				}
+			}
+
+			// Return averaged color if we found nearby pixels
+			if (count > 0)
+			{
+				return new Rgba32((byte)(totalR / count), (byte)(totalG / count), (byte)(totalB / count), 255);
+			}
+
+			return new Rgba32(0, 0, 0, 0);
 		}
 
 		/// <summary>

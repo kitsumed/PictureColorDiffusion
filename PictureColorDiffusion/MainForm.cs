@@ -406,7 +406,8 @@ namespace PictureColorDiffusion
 		private void checkBoxUseYoloV8_CheckedChanged(object sender, EventArgs e)
 		{
 			comboBoxYoloV8ONNXModels.Enabled = checkBoxUseYoloV8.Checked;
-		}
+			checkBoxYoloEdgeDetection.Enabled = checkBoxUseYoloV8.Checked;
+        }
 
 		/// <summary>
 		/// Called when the selected output format change.
@@ -583,7 +584,7 @@ namespace PictureColorDiffusion
 						PictureHandler.GetImageMaskFromSegmentationResult(segResult, out resultMask);
 
 						// Get the content on originalImage that matches the mask
-						originalImageMaskContent = PictureHandler.ExtractImageFromMask(originalImage, resultMask);
+						originalImageMaskContent = PictureHandler.ExtractImageFromMask(originalImage, resultMask, checkBoxYoloEdgeDetection.Checked);
 						// Free memory from the results mask
 						resultMask?.Dispose();
 					}
@@ -651,11 +652,11 @@ namespace PictureColorDiffusion
 							{
 								// Add the "comments" key
 								generatedImageMetadata.TextData.Add(new PngTextData("comments", $"Made with PictureColorDiffusion v{Application.ProductVersion} using mode '{SelectedMode}'.\n" +
-								/// Additional info about the generation
-								$"\nControlnet lowvram: {checkBoxControlNetLowvram.Checked}" +
-								$"\nReference picture: {controlNetReferenceUnitArg != null}" +
-								$"\nKeep original size: {checkBoxKeepOriginalSize.Checked}" +
-								$"\nUse interrogation: {checkBoxUseInterrogation.Checked}", string.Empty, string.Empty));
+							/// Additional info about the generation
+							$"\nControlnet lowvram: {checkBoxControlNetLowvram.Checked}" +
+							$"\nReference picture: {controlNetReferenceUnitArg != null}" +
+							$"\nKeep original size: {checkBoxKeepOriginalSize.Checked}" +
+							$"\nUse interrogation: {checkBoxUseInterrogation.Checked}", string.Empty, string.Empty));
 							}
 						}
 						else // Remove the metadata added by stable diffusion webui
@@ -845,11 +846,12 @@ namespace PictureColorDiffusion
 					// Get the mask from the inference results
 					Image<Rgba32> resultMask;
 					PictureHandler.GetImageMaskFromSegmentationResult(result, out resultMask);
+					
 					// Save the mask
 					await resultMask.SaveAsPngAsync(Path.Combine(textBoxPictureOutputPath.Text, Path.GetFileNameWithoutExtension(filePath) + "_mask.png"), new PngEncoder() { CompressionLevel = PngCompressionLevel.BestCompression });
 
 					// Get the content on currentPicture that matches the mask
-					using Image<Rgba32> currentPictureMaskContent = PictureHandler.ExtractImageFromMask(currentPicture, resultMask);
+					using Image<Rgba32> currentPictureMaskContent = PictureHandler.ExtractImageFromMask(currentPicture, resultMask, checkBoxYoloEdgeDetection.Checked);
 
 					// Save the content that matched the mask
 					await currentPictureMaskContent.SaveAsPngAsync(Path.Combine(textBoxPictureOutputPath.Text, Path.GetFileNameWithoutExtension(filePath) + "_mask_result.png"), new PngEncoder() { CompressionLevel = PngCompressionLevel.BestCompression });
