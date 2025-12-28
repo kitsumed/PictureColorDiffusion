@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <Copyright>Copyright kitsumed (Med) - GPL-3.0 license</Copyright>
     <Nullable>enable</Nullable>
@@ -12,6 +12,8 @@
     <Authors>$(AssemblyName)</Authors>
     <PlatformTarget>x64</PlatformTarget>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	<DebugType>embedded</DebugType>
+	<Deterministic>true</Deterministic>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -33,7 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
     <PackageReference Include="YoloV8" Version="4.2.0" />
   </ItemGroup>
 
